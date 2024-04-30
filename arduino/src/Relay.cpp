@@ -62,9 +62,11 @@ Relay *getRelay(int command) {
 }
 
 void initRelays() {
-    for (int i = 0; i < COUNT_RELAY; ++i) {
-        Relay *pRelay = getRelay(i + 1);
-        pRelay->initRelay();
+    for (int i = COMMAND_KEY_1; i <= COMMAND_KEY_16; ++i) {
+        Relay *pRelay = getRelay(i);
+        if(pRelay != nullptr){
+            pRelay->initRelay();
+        }
     }
 }
 

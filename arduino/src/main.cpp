@@ -4,9 +4,23 @@ void handleCommand(int command, HardwareSerial *serial){
     if(command <= 0){
         return;
     }
-    if(command >= 1 && command <= COUNT_RELAY){
-        handleRelayCommand(command);
-        writeRelayDataToSerial(serial);
+
+    if(command >= COMMAND_KEY_1 && command <= COMMAND_KEY_16){
+        Relay *pRelay = getRelay(command);
+        pRelay->switchRelay();
+        writeRelayDataToSerial(serial, command);
+        writeEndOfRecord(serial);
+        return;
+    }
+
+    if(command >= COMMAND_KEY_DATA_SEND_RELAY_1 && command <= COMMAND_KEY_DATA_SEND_RELAY_16){
+        writeRelayDataToSerial(serial, command-50);
+        writeEndOfRecord(serial);
+        return;
+    }
+
+    if(command == COMMAND_KEY_DATA_SEND_TEMPERATURE_AND_HUMIDITY){
+        writeTemperatureDataToSerial(serial);
         writeEndOfRecord(serial);
         return;
     }
@@ -16,19 +30,12 @@ void handleCommand(int command, HardwareSerial *serial){
         writeEndOfRecord(serial);
         return;
     }
-
-    if(command == COMMAND_KEY_DATA_SEND_RELAY){
-        writeRelayDataToSerial(serial);
+    if(command == COMMAND_KEY_DATA_RESET_RELAYS){
+        initRelays();
+        writeSystemDataToSerial(serial);
         writeEndOfRecord(serial);
         return;
     }
-
-    if(command == COMMAND_KEY_DATA_SEND_TEMPERATURE){
-        writeTemperatureDataToSerial(serial);
-        writeEndOfRecord(serial);
-        return;
-    }
-
 }
 
 void setup() {
