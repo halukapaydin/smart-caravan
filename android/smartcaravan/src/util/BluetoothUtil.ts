@@ -1,6 +1,7 @@
 import {PermissionsAndroid, Platform} from "react-native";
 import {Peripheral} from "react-native-ble-manager";
 import BluetoothDevice from "../model/BluetoothDevice.ts";
+import SensorValues from "../model/SensorValues.ts";
 
 
 const PERMISSIONS = [
@@ -41,7 +42,18 @@ export const convertPeripheralToBluetoothDevice = (peripheral:Peripheral|any)=>{
         peripheral.name,
         peripheral.id,
         peripheral.rssi,
-        peripheral.connected
+        peripheral.connected,
+        peripheral.serviceUUIDs
     );
     return device;
 }
+
+
+export const parseBluetoothData = (data:any)=>{
+    console.log("parse data", data);
+    return new SensorValues();
+}
+
+export const SERVICE_UUID = "ffe0";
+export const CHARACTERISTIC_UUID = "95967FEA-317C-4C39-9E61-A2FF8470277A";
+

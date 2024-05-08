@@ -3,7 +3,12 @@ import BluetoothDevice from "../model/BluetoothDevice.ts";
 import {NativeEventEmitter, NativeModules, ToastAndroid} from "react-native";
 import BleManager, {Peripheral} from "react-native-ble-manager";
 import {EmitterSubscription} from "react-native/Libraries/vendor/emitter/EventEmitter";
-import {convertPeripheralToBluetoothDevice, grantBluetoothPermissions} from "../util/BluetoothUtil.ts";
+import {
+    CHARACTERISTIC_UUID,
+    convertPeripheralToBluetoothDevice,
+    grantBluetoothPermissions,
+    SERVICE_UUID
+} from "../util/BluetoothUtil.ts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const BleManagerModule = NativeModules.BleManager;
@@ -21,14 +26,18 @@ interface IBluetoothManagerContextValue {
     scanStart: DispatchWithoutAction,
     scanStop: DispatchWithoutAction,
     bluetoothConnectionError: string,
+    bluetoothState : string,
     isDeviceConnected: (device: BluetoothDevice | undefined) => boolean,
-    initBluetoothDevice : ()=>Promise<void>
+    initBluetoothDevice: () => Promise<void>;
+    setOnDidDataUpdateListener: Dispatch<Dispatch<any>>;
+    writeDataOnConnectedDevice : Dispatch<number>;
 }
 
 
 const _bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 let _discoverListener: EmitterSubscription | null = null;
 let _stopScanListener: EmitterSubscription | null = null;
+let _didUpdateValueForCharacteristicListener: EmitterSubscription | null = null;
 
 export const BluetoothManagerContext = React.createContext<IBluetoothManagerContextValue>({
     scanning: false,
@@ -37,6 +46,7 @@ export const BluetoothManagerContext = React.createContext<IBluetoothManagerCont
     pairedDevices: [],
     discoveredDevices: [],
     bluetoothConnectionError: "",
+    bluetoothState : "",
     connectDevice: (device: BluetoothDevice) => {
     },
     disconnectDevice: (device: BluetoothDevice) => {
@@ -49,19 +59,26 @@ export const BluetoothManagerContext = React.createContext<IBluetoothManagerCont
     },
     scanStop: () => {
     },
-    initBluetoothDevice : ()=>new Promise(()=>{})
+    initBluetoothDevice: () => new Promise(() => {
+    }),
+    setOnDidDataUpdateListener: (dispatch: Dispatch<any>) => {
+    },
+    writeDataOnConnectedDevice : ()=>{}
+
 });
 
 export const BluetoothManagerContextProvider = ({children}: { children: any }) => {
     const [bluetoothConnectionError, setBluetoothConnectionError] = useState<string>("");
+    const [bluetoothState, setBluetoothState] = useState<string>("");
     const [scanning, setScanning] = useState(false);
     const [connecting, setConnecting] = useState(false);
     const [connectedDevice, setConnectedDevice] = useState<BluetoothDevice>(new BluetoothDevice());
     const [pairedDevices, setPairedDevices] = useState<BluetoothDevice[]>([]);
     const [discoveredDevices, setDiscoveredDevices] = useState<BluetoothDevice[]>([]);
-
+    const [onDidDataUpdate, setOnDidDataUpdate] = useState<Dispatch<any>>(() => {
+    });
     const onDeviceDiscovered = (device: BluetoothDevice) => {
-        if(discoveredDevices.findIndex(d=>(d.id === device.id)) >= 0){
+        if (discoveredDevices.findIndex(d => (d.id === device.id)) >= 0) {
             return;
         }
         console.log("device discovered", device);
@@ -73,7 +90,7 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
         setScanning(false);
         console.log("scan stopped")
     }
-    const setLastConnectedDevice = async (device:BluetoothDevice) => {
+    const setLastConnectedDevice = async (device: BluetoothDevice) => {
         try {
             const jsonValue = JSON.stringify(device);
             await AsyncStorage.setItem('last-connected-device', jsonValue);
@@ -85,11 +102,11 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
     const getLastConnectedDevice = async () => {
         try {
             const jsonValue = await AsyncStorage.getItem('last-connected-device');
-            if(!jsonValue){
+            if (!jsonValue) {
                 return null;
             }
             let parse = JSON.parse(jsonValue);
-            let device :BluetoothDevice= Object.assign(new BluetoothDevice(), parse);
+            let device: BluetoothDevice = Object.assign(new BluetoothDevice(), parse);
             return device;
         } catch (e) {
             // error reading value
@@ -101,7 +118,9 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
         setConnecting(true);
         console.log("connecting")
         bleManager.connect(device.id)
-            .then(res => {
+            .then(async res => {
+                const peri = await bleManager.retrieveServices(device.id);
+                console.log("peri", peri);
                 let bluetoothDevice = device.clone();
                 setConnectedDevice(bluetoothDevice);
                 setLastConnectedDevice(bluetoothDevice).then();
@@ -137,7 +156,7 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
     }
 
     const reconnectDevice = () => {
-        getLastConnectedDevice().then((lastConnectedDevice:BluetoothDevice|null|undefined)=>{
+        getLastConnectedDevice().then((lastConnectedDevice: BluetoothDevice | null | undefined) => {
             if (!lastConnectedDevice) {
                 return;
             }
@@ -179,6 +198,7 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
                 if (!peripheral.id || !peripheral.name) {
                     return;
                 }
+                console.log("peripheral", peripheral);
                 let bluetoothDevice = convertPeripheralToBluetoothDevice(peripheral);
                 onDeviceDiscovered(bluetoothDevice);
             }
@@ -191,6 +211,24 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
             },
         );
 
+        _didUpdateValueForCharacteristicListener = _bleManagerEmitter.addListener(
+            'BleManagerDidUpdateValueForCharacteristic',
+            (data) => {
+                if (!!onDidDataUpdate) {
+                    onDidDataUpdate(data);
+                }
+            },
+        );
+
+        _didUpdateValueForCharacteristicListener = _bleManagerEmitter.addListener(
+            'BleManagerDidUpdateState',
+            (data) => {
+                setBluetoothState(data?.state);
+                console.log("bluetooth state " + data?.state);
+            },
+        );
+
+
         return BleManager
     }, []);
 
@@ -201,13 +239,13 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
         })
     }
 
-    const initBluetoothDevice = async ()=>{
+    const initBluetoothDevice = async () => {
         await grantBluetoothPermissions();
         await bleManager.enableBluetooth();
-        console.log("inint");
+        console.log("init");
 
         return bleManager.start({
-            showAlert : true
+            showAlert: true
         });
     }
 
@@ -219,9 +257,26 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
             if (_stopScanListener) {
                 _stopScanListener.remove();
             }
+            if (_didUpdateValueForCharacteristicListener) {
+                _didUpdateValueForCharacteristicListener.remove();
+            }
         }
     }, []);
 
+    const handleOnDidDataUpdate = (dispatch: Dispatch<any>) => {
+        setOnDidDataUpdate(dispatch);
+    }
+
+    const writeDataOnConnectedDevice = (data:number)=>{
+        bleManager.writeWithoutResponse(connectedDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID, [data])
+            .then((res)=>{
+                console.log("res writeWithoutResponse", res);
+            })
+            .catch(err=>{
+                console.log("err writeWithoutResponse", err);
+            })
+        ;
+    }
 
     return <BluetoothManagerContext.Provider value={
         {
@@ -238,7 +293,10 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
             scanStop: scanStop,
             isDeviceConnected: isDeviceConnected,
             bluetoothConnectionError: bluetoothConnectionError,
-            initBluetoothDevice : initBluetoothDevice
+            bluetoothState : bluetoothState,
+            initBluetoothDevice: initBluetoothDevice,
+            setOnDidDataUpdateListener: handleOnDidDataUpdate,
+            writeDataOnConnectedDevice : writeDataOnConnectedDevice
         }
     }>
         {children}

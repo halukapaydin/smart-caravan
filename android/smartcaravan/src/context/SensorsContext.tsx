@@ -1,7 +1,9 @@
-import React, {useMemo, useState} from 'react';
+import React, {Dispatch, useContext, useEffect, useMemo, useState} from 'react';
 import BluetoothSensorService from "../service/BluetoothSensorService.ts";
 import ISensorService from "../service/ISensorService.ts";
 import SensorValues from "../model/SensorValues.ts";
+import {BluetoothManagerContext} from "./BluetoothManagerContext.tsx";
+import {parseBluetoothData} from "../util/BluetoothUtil.ts";
 
 interface ISensorsContext {
     readAllValues: () => SensorValues;
@@ -10,6 +12,7 @@ interface ISensorsContext {
     readRelayButtonValue: (relayButtonId: number) => SensorValues;
     dataUpdateTime: number;
     sensorsData : SensorValues;
+    sendCommand : Dispatch<number>;
 }
 
 const DEFAULT_VALUE: ISensorsContext = {
@@ -18,7 +21,8 @@ const DEFAULT_VALUE: ISensorsContext = {
     readAllValues: () => new SensorValues(),
     readHumidityValue: () => new SensorValues(),
     readTemperatureValue: () => new SensorValues(),
-    readRelayButtonValue: () => new SensorValues()
+    readRelayButtonValue: () => new SensorValues(),
+    sendCommand : ()=>{}
 }
 
 const SensorsContext = React.createContext(DEFAULT_VALUE);
@@ -26,20 +30,33 @@ const SensorsContext = React.createContext(DEFAULT_VALUE);
 export const SensorsContextProvider = ({children}: { children: any }) => {
     const [data, setData] = useState(new SensorValues());
     const [dataUpdateTime, setDataUpdateTime] = useState(0);
-
-    const bluetoothSensorService:ISensorService = useMemo(() => {
+    const {setOnDidDataUpdateListener, writeDataOnConnectedDevice} = useContext(BluetoothManagerContext);
+    const onDataUpdate = useMemo(()=>{
+        return (data:any)=>{
+            let sensorValues = parseBluetoothData(data);
+            setData(sensorValues);
+            setDataUpdateTime(new Date().getTime());
+        }
+    }, []);
+    const sensorService:ISensorService = useMemo(() => {
         return new BluetoothSensorService();
     }, []);
 
+    useEffect(() => {
+        setOnDidDataUpdateListener(onDataUpdate);
+        return () => {};
+    }, []);
+
+
     const readAllValues = () => {
-        const sensorValues: SensorValues = bluetoothSensorService.readAllValues();
+        const sensorValues: SensorValues = sensorService.readAllValues();
         setData(sensorValues);
         setDataUpdateTime(new Date().getTime());
         return sensorValues;
     }
 
     const readHumidityValue = () => {
-        const humidityValue = bluetoothSensorService.readHumidityValue();
+        const humidityValue = sensorService.readHumidityValue();
         const newSensorData: SensorValues = new SensorValues();
         Object.assign(newSensorData, data);
         newSensorData.setHumidityValue(humidityValue)
@@ -49,7 +66,7 @@ export const SensorsContextProvider = ({children}: { children: any }) => {
 
     }
     const readTemperatureValue = () => {
-        const humidityValue = bluetoothSensorService.readTemperatureValue();
+        const humidityValue = sensorService.readTemperatureValue();
         const newSensorData: SensorValues = new SensorValues();
         Object.assign(newSensorData, data);
         newSensorData.setTemperatureValue(humidityValue)
@@ -60,13 +77,17 @@ export const SensorsContextProvider = ({children}: { children: any }) => {
 
 
     const readRelayButtonValue = (relayButtonId: number) => {
-        const relayButtonValue = bluetoothSensorService.readRelayButtonValue(relayButtonId);
+        const relayButtonValue = sensorService.readRelayButtonValue(relayButtonId);
         const newSensorData: SensorValues = new SensorValues();
         Object.assign(newSensorData, data);
         newSensorData.getButtonsValue()[relayButtonId - 1] = relayButtonValue;
         setData(newSensorData)
         setDataUpdateTime(new Date().getTime());
         return newSensorData;
+    }
+
+    const sendCommand = (command : number)=>{
+        writeDataOnConnectedDevice(command);
     }
 
     return <SensorsContext.Provider value={
@@ -76,7 +97,8 @@ export const SensorsContextProvider = ({children}: { children: any }) => {
             readTemperatureValue: readTemperatureValue,
             readRelayButtonValue: readRelayButtonValue,
             dataUpdateTime: dataUpdateTime,
-            sensorsData : data
+            sensorsData : data,
+            sendCommand : sendCommand
         }
     }>
         {children}

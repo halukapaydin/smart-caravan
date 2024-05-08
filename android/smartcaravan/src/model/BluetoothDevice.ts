@@ -1,16 +1,17 @@
 export default class BluetoothDevice{
+
     private _name : string;
     private _id : string;
     private _rssi : string;
     private _connected : string;
+    private _serviceUUID :string[];
 
-
-
-    constructor(name: string = "", id: string = "", rssi: string = "", connected: string = "") {
+    constructor(name: string = "", id: string = "", rssi: string = "", connected: string = "", serviceUUID :string[] = []) {
         this._name = name;
         this._id = id;
         this._rssi = rssi;
         this._connected = connected;
+        this._serviceUUID = serviceUUID;
     }
 
     get name(): string {
@@ -45,6 +46,13 @@ export default class BluetoothDevice{
         this._connected = value;
     }
 
+    get serviceUUID(): string[] {
+        return this._serviceUUID;
+    }
+
+    set serviceUUID(value: string[]) {
+        this._serviceUUID = value;
+    }
     clone() : BluetoothDevice{
         const c = new BluetoothDevice();
         Object.assign(c, this);
