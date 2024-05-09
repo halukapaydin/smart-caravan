@@ -4,7 +4,7 @@
 #include "Common.h"
 
 
-void writeRelayDataToSerial(HardwareSerial *serial, int *relayId) {
+void writeRelayDataToSerial(HardwareSerial *serial, int relayId) {
     Relay *pRelay = getRelay(relayId);
     if (pRelay != nullptr) {
         pRelay->write(serial);
@@ -19,7 +19,9 @@ void writeTemperatureDataToSerial(HardwareSerial *serial) {
 }
 
 void writeSystemDataToSerial(HardwareSerial *serial) {
-    writeRelayDataToSerial(serial);
+    for (int i = DATA_KEY_RELAY_1; i < DATA_KEY_RELAY_16; ++i) {
+        writeRelayDataToSerial(serial, i);
+    }
     writeTemperatureDataToSerial(serial);
 }
 

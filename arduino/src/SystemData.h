@@ -4,6 +4,6 @@
 
 void writeSystemDataToSerial(HardwareSerial *serial);
 void writeTemperatureDataToSerial(HardwareSerial *serial);
-void writeRelayDataToSerial(HardwareSerial *serial, int *relayId);
+void writeRelayDataToSerial(HardwareSerial *serial, int relayId);
 void writeEndOfRecord(HardwareSerial *serial);
 #endif
