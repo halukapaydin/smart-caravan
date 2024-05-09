@@ -1,0 +1,278 @@
+{
+  "advertising": {
+    "rawData": {
+      "CDVType": "ArrayBuffer",
+      "bytes": [
+        Array
+      ],
+      "data": ""
+    }
+  },
+  "characteristics": [
+    {
+      "characteristic": "2a00",
+      "properties": [
+        Object
+      ],
+      "service": "1800"
+    },
+    {
+      "characteristic": "2a01",
+      "properties": [
+        Object
+      ],
+      "service": "1800"
+    },
+    {
+      "characteristic": "2a02",
+      "properties": [
+        Object
+      ],
+      "service": "1800"
+    },
+    {
+      "characteristic": "2a03",
+      "properties": [
+        Object
+      ],
+      "service": "1800"
+    },
+    {
+      "characteristic": "2a04",
+      "properties": [
+        Object
+      ],
+      "service": "1800"
+    },
+    {
+      "characteristic": "2a05",
+      "descriptors": [
+        Array
+      ],
+      "properties": [
+        Object
+      ],
+      "service": "1801"
+    },
+    {
+      "characteristic": "2a23",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a24",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a25",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a26",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a27",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a28",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a29",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a2a",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a50",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "ffe1",
+      "descriptors": [
+        Array
+      ],
+      "properties": [
+        Object
+      ],
+      "service": "ffe0"
+    },
+    {
+      "characteristic": "2a00",
+      "properties": [
+        Object
+      ],
+      "service": "1800"
+    },
+    {
+      "characteristic": "2a01",
+      "properties": [
+        Object
+      ],
+      "service": "1800"
+    },
+    {
+      "characteristic": "2a02",
+      "properties": [
+        Object
+      ],
+      "service": "1800"
+    },
+    {
+      "characteristic": "2a03",
+      "properties": [
+        Object
+      ],
+      "service": "1800"
+    },
+    {
+      "characteristic": "2a04",
+      "properties": [
+        Object
+      ],
+      "service": "1800"
+    },
+    {
+      "characteristic": "2a05",
+      "descriptors": [
+        Array
+      ],
+      "properties": [
+        Object
+      ],
+      "service": "1801"
+    },
+    {
+      "characteristic": "2a23",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a24",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a25",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a26",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a27",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a28",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a29",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a2a",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "2a50",
+      "properties": [
+        Object
+      ],
+      "service": "180a"
+    },
+    {
+      "characteristic": "ffe1",
+      "descriptors": [
+        Array
+      ],
+      "properties": [
+        Object
+      ],
+      "service": "ffe0"
+    }
+  ],
+  "id": "34:14:B5:C8:4A:A9",
+  "name": null,
+  "rssi": 0,
+  "services": [
+    {
+      "uuid": "1800"
+    },
+    {
+      "uuid": "1801"
+    },
+    {
+      "uuid": "180a"
+    },
+    {
+      "uuid": "ffe0"
+    },
+    {
+      "uuid": "1800"
+    },
+    {
+      "uuid": "1801"
+    },
+    {
+      "uuid": "180a"
+    },
+    {
+      "uuid": "ffe0"
+    }
+  ]
+}

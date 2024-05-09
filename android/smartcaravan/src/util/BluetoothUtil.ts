@@ -54,6 +54,7 @@ export const parseBluetoothData = (data:any)=>{
     return new SensorValues();
 }
 
-export const SERVICE_UUID = "ffe0";
-export const CHARACTERISTIC_UUID = "95967FEA-317C-4C39-9E61-A2FF8470277A";
+
+export const SERVICE_UUID:string = "ffe0";
+export const CHARACTERISTIC_UUID:string = "ffe1";
 

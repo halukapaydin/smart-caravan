@@ -24,7 +24,7 @@ void writeSystemDataToSerial(HardwareSerial *serial) {
 }
 
 void writeEndOfRecord(HardwareSerial *serial) {
-    serial->write('\n');
+    serial->write(ENF_OF_RECORD);
 }
 
 

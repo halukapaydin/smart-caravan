@@ -16,7 +16,7 @@ const BleManagerModule = NativeModules.BleManager;
 interface IBluetoothManagerContextValue {
     scanning: boolean,
     connecting: boolean,
-    connectedDevice: BluetoothDevice,
+    connectedDevice: BluetoothDevice | undefined,
     fetchPairedDevices: DispatchWithoutAction,
     pairedDevices: BluetoothDevice[],
     discoveredDevices: BluetoothDevice[],
@@ -26,11 +26,11 @@ interface IBluetoothManagerContextValue {
     scanStart: DispatchWithoutAction,
     scanStop: DispatchWithoutAction,
     bluetoothConnectionError: string,
-    bluetoothState : string,
+    bluetoothState: string,
     isDeviceConnected: (device: BluetoothDevice | undefined) => boolean,
     initBluetoothDevice: () => Promise<void>;
     setOnDidDataUpdateListener: Dispatch<Dispatch<any>>;
-    writeDataOnConnectedDevice : Dispatch<number>;
+    writeDataOnConnectedDevice: Dispatch<number>;
 }
 
 
@@ -38,6 +38,7 @@ const _bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 let _discoverListener: EmitterSubscription | null = null;
 let _stopScanListener: EmitterSubscription | null = null;
 let _didUpdateValueForCharacteristicListener: EmitterSubscription | null = null;
+let _didUpdateStateListener: EmitterSubscription | null = null;
 
 export const BluetoothManagerContext = React.createContext<IBluetoothManagerContextValue>({
     scanning: false,
@@ -46,7 +47,7 @@ export const BluetoothManagerContext = React.createContext<IBluetoothManagerCont
     pairedDevices: [],
     discoveredDevices: [],
     bluetoothConnectionError: "",
-    bluetoothState : "",
+    bluetoothState: "",
     connectDevice: (device: BluetoothDevice) => {
     },
     disconnectDevice: (device: BluetoothDevice) => {
@@ -63,7 +64,8 @@ export const BluetoothManagerContext = React.createContext<IBluetoothManagerCont
     }),
     setOnDidDataUpdateListener: (dispatch: Dispatch<any>) => {
     },
-    writeDataOnConnectedDevice : ()=>{}
+    writeDataOnConnectedDevice: () => {
+    }
 
 });
 
@@ -72,7 +74,7 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
     const [bluetoothState, setBluetoothState] = useState<string>("");
     const [scanning, setScanning] = useState(false);
     const [connecting, setConnecting] = useState(false);
-    const [connectedDevice, setConnectedDevice] = useState<BluetoothDevice>(new BluetoothDevice());
+    const [connectedDevice, setConnectedDevice] = useState<BluetoothDevice | undefined>(undefined);
     const [pairedDevices, setPairedDevices] = useState<BluetoothDevice[]>([]);
     const [discoveredDevices, setDiscoveredDevices] = useState<BluetoothDevice[]>([]);
     const [onDidDataUpdate, setOnDidDataUpdate] = useState<Dispatch<any>>(() => {
@@ -119,12 +121,14 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
         console.log("connecting")
         bleManager.connect(device.id)
             .then(async res => {
-                const peri = await bleManager.retrieveServices(device.id);
-                console.log("peri", peri);
+                // const peri = await bleManager.retrieveServices(device.id);
+                // console.log("peri", peri);
                 let bluetoothDevice = device.clone();
                 setConnectedDevice(bluetoothDevice);
                 setLastConnectedDevice(bluetoothDevice).then();
                 console.log("connected")
+                await BleManager.startNotification(bluetoothDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID);
+
             })
             .catch(err => {
                 setBluetoothConnectionError(err);
@@ -144,13 +148,26 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
 
         bleManager.isPeripheralConnected(connectedDevice.id)
             .then((connected) => {
+                console.log("isPeripheralConnected", connected)
                 setConnecting(false);
                 if (!connected) {
-                    setConnectedDevice(new BluetoothDevice());
+                    setConnectedDevice(undefined);
                     return;
                 }
-                bleManager.disconnect(connectedDevice.id).then(res => {
-                    setConnectedDevice(new BluetoothDevice());
+                bleManager.disconnect(connectedDevice.id).then(async res => {
+                    console.log("isPeripheralConnected", connectedDevice.id)
+
+                    // try {
+                    //     await bleManager.stopNotification(connectedDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID);
+                    //     console.log("stopNotification", connectedDevice.id)
+                    //
+                    // } finally {
+                    //     setConnectedDevice(undefined);
+                    // }
+                    setConnectedDevice(undefined);
+                    console.log("disconnected ")
+
+
                 })
             })
     }
@@ -214,13 +231,14 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
         _didUpdateValueForCharacteristicListener = _bleManagerEmitter.addListener(
             'BleManagerDidUpdateValueForCharacteristic',
             (data) => {
+                console.log("BleManagerDidUpdateValueForCharacteristic", data)
                 if (!!onDidDataUpdate) {
                     onDidDataUpdate(data);
                 }
             },
         );
 
-        _didUpdateValueForCharacteristicListener = _bleManagerEmitter.addListener(
+        _didUpdateStateListener = _bleManagerEmitter.addListener(
             'BleManagerDidUpdateState',
             (data) => {
                 setBluetoothState(data?.state);
@@ -260,6 +278,9 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
             if (_didUpdateValueForCharacteristicListener) {
                 _didUpdateValueForCharacteristicListener.remove();
             }
+            if (_didUpdateStateListener) {
+                _didUpdateStateListener.remove();
+            }
         }
     }, []);
 
@@ -267,15 +288,18 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
         setOnDidDataUpdate(dispatch);
     }
 
-    const writeDataOnConnectedDevice = (data:number)=>{
+    const writeDataOnConnectedDevice = (data: number) => {
+        if (!connectedDevice) {
+            return;
+        }
         bleManager.writeWithoutResponse(connectedDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID, [data])
-            .then((res)=>{
+            .then((res) => {
                 console.log("res writeWithoutResponse", res);
             })
-            .catch(err=>{
+            .catch(err => {
                 console.log("err writeWithoutResponse", err);
             })
-        ;
+
     }
 
     return <BluetoothManagerContext.Provider value={
@@ -293,10 +317,10 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
             scanStop: scanStop,
             isDeviceConnected: isDeviceConnected,
             bluetoothConnectionError: bluetoothConnectionError,
-            bluetoothState : bluetoothState,
+            bluetoothState: bluetoothState,
             initBluetoothDevice: initBluetoothDevice,
             setOnDidDataUpdateListener: handleOnDidDataUpdate,
-            writeDataOnConnectedDevice : writeDataOnConnectedDevice
+            writeDataOnConnectedDevice: writeDataOnConnectedDevice
         }
     }>
         {children}
