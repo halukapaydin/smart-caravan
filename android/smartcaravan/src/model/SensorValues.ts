@@ -4,6 +4,9 @@ export default class SensorValues {
     private buttonsValue: number[] = [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0];
     private humidityValue: number = 0;
     private temperatureValue: number = 0;
+    private cleanWaterLevel : number = 0;
+    private grayWaterLevel : number = 0;
+    private blackWaterLevel : number = 0;
 
 
     getButtonsValue(): number[] {
@@ -40,6 +43,27 @@ export default class SensorValues {
 
     setTemperatureValue(value: number) {
         this.temperatureValue = value;
+    }
+
+    getCleanWaterLevel() : number{
+        return this.cleanWaterLevel;
+    };
+
+    setCleanWaterLevel(level:number){
+        this.cleanWaterLevel = level;
+    }
+    getGrayWaterLevel() : number{
+        return this.grayWaterLevel;
+    };
+    setGrayWaterLevel(level:number){
+        this.grayWaterLevel = level;
+    }
+
+    getBlackWaterLevel() : number{
+        return this.blackWaterLevel;
+    };
+    setBlackWaterLevel(level:number){
+        this.blackWaterLevel = level;
     }
 
     clone() : SensorValues{
