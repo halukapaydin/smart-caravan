@@ -1,7 +1,7 @@
 import {BUTTON_VALUE_UNKNOWN} from "./ButtonValue.ts";
 
 export default class SensorValues {
-    private buttonsValue: number[] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    private buttonsValue: number[] = [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0];
     private humidityValue: number = 0;
     private temperatureValue: number = 0;
 
@@ -40,5 +40,11 @@ export default class SensorValues {
 
     setTemperatureValue(value: number) {
         this.temperatureValue = value;
+    }
+
+    clone() : SensorValues{
+        const c = new SensorValues();
+        Object.assign(c, this);
+        return c;
     }
 }

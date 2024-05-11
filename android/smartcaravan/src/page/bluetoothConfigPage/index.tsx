@@ -4,6 +4,7 @@ import BluetoothDevice from "../../model/BluetoothDevice.ts";
 import BluetoothDeviceList from "./BluetoothDeviceList.tsx";
 import BluetoothScanButton from "./BluetoothScanButton.tsx";
 import {BluetoothManagerContext} from "../../context/BluetoothManagerContext.tsx";
+import {COLOR_BACKGROUND} from "../../util/BluetoothUtil.ts";
 
 interface BluetoothConfigPageProps {
 }
@@ -42,7 +43,7 @@ export default (props: BluetoothConfigPageProps) => {
 const Styles = StyleSheet.create({
     deviceTitle: {
         fontWeight: 'bold', textAlign: 'center', fontSize: 16,
-        color : '#000000'
+        color : "#FFFFFF"
     },
     listContainer: {
         flex: 1

@@ -1,7 +1,6 @@
 import React, {useContext} from 'react';
 import {StyleSheet, View} from "react-native";
 import RelayButton from "./RelayButton.tsx";
-import SensorsContext from "../../context/SensorsContext.tsx";
 
 interface RelayButtonsProps {
 }

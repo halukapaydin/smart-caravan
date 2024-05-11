@@ -1,18 +1,19 @@
 import React, {useContext} from 'react';
-import {Text, TouchableOpacity, View} from "react-native";
-import {faBluetooth, faBluetoothB} from '@fortawesome/free-brands-svg-icons'
-import {faGear, faHome, faPlug} from '@fortawesome/free-solid-svg-icons'
+import {ActivityIndicator, Text, TouchableOpacity, View} from "react-native";
+import {faGear, faHandshake, faHandshakeSlash, faHome} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {useNavigation} from "@react-navigation/native";
 import {PAGE_BLUETOOTH_CONFIG, PAGE_HOME} from "././Pages";
 import {BluetoothManagerContext} from "../context/BluetoothManagerContext.tsx";
+import {COLOR_BACKGROUND, COLOR_HIGHLIGHT, COLOR_SECONDARY} from "../util/BluetoothUtil.ts";
 
 interface ApplicationHeaderProps {
 }
 
 const PageHeader = (props: ApplicationHeaderProps) => {
     let navigation = useNavigation();
-    const {isDeviceConnected, reconnectDevice, disconnectDevice, connectedDevice} = useContext(BluetoothManagerContext);
+    const {isDeviceConnected, reconnectDevice, disconnectDevice
+        , connectedDevice, connecting} = useContext(BluetoothManagerContext);
 
     const handleGearIconClick = () => {
         navigation.navigate(PAGE_BLUETOOTH_CONFIG);
@@ -21,16 +22,24 @@ const PageHeader = (props: ApplicationHeaderProps) => {
         navigation.navigate(PAGE_HOME);
     }
     const handleBluetoothIconClick = () => {
-        if(!isDeviceConnected(undefined)){
+        if (!isDeviceConnected(undefined)) {
             reconnectDevice();
-        }else{
+        } else {
             disconnectDevice(connectedDevice);
         }
+    }
+    let iconBluetooth = undefined;
+    if(connecting){
+        iconBluetooth = <ActivityIndicator />
+    }else if (isDeviceConnected(undefined)) {
+        iconBluetooth = <FontAwesomeIcon size={24} color={COLOR_HIGHLIGHT} icon={faHandshake}/>
+    } else {
+        iconBluetooth = <FontAwesomeIcon size={24} color={COLOR_SECONDARY} icon={faHandshakeSlash}/>
     }
 
     return <View
         style={{
-            backgroundColor: '#FF4443',
+            backgroundColor: COLOR_BACKGROUND,
             padding: 10,
             flexDirection: 'row',
             justifyContent: "space-between",
@@ -43,11 +52,11 @@ const PageHeader = (props: ApplicationHeaderProps) => {
             </TouchableOpacity>
         </View>
         <View style={{flex: 1}}>
-            <Text style={{color: "#FFFFFF", fontSize: 18, textAlign : 'center'}}>AVARE YOLCULAR</Text>
+            <Text style={{color: "#FFFFFF", fontSize: 18, textAlign: 'center'}}>AVARE YOLCULAR</Text>
         </View>
         <View>
             <TouchableOpacity onPress={handleBluetoothIconClick}>
-                {!isDeviceConnected(undefined) ? <FontAwesomeIcon color={"#444444"} icon={faPlug} size={24}/> :  <FontAwesomeIcon size={24} color={"#FFFFFF"} icon={faBluetoothB}/>}
+                {iconBluetooth}
             </TouchableOpacity>
         </View>
         <View>

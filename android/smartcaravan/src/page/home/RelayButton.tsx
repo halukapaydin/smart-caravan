@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Text, TouchableOpacity, View} from "react-native";
-import SensorsContext from "../../context/SensorsContext.tsx";
+import {BluetoothManagerContext} from "../../context/BluetoothManagerContext.tsx";
+import {COLOR_BACKGROUND, COLOR_HIGHLIGHT, COLOR_PRIMARY, COLOR_SECONDARY} from "../../util/BluetoothUtil.ts";
 
 interface RelayButtonProps {
     relayId : number;
@@ -8,7 +9,12 @@ interface RelayButtonProps {
 
 const RelayButton = (props: RelayButtonProps) => {
     const [value, setValue] = useState(0);
-    const {dataUpdateTime, sensorsData, sendCommand} = useContext(SensorsContext);
+    const {dataUpdateTime, sensorsData, sendCommand} = useContext(BluetoothManagerContext);
+
+    useEffect(() => {
+        setValue(sensorsData.getButtonValue(props.relayId))
+    }, []);
+
     useEffect(() => {
         return () => {
             setValue(sensorsData.getButtonValue(props.relayId))
@@ -19,9 +25,10 @@ const RelayButton = (props: RelayButtonProps) => {
         sendCommand(props.relayId);
     }
 
-    return <TouchableOpacity style={{backgroundColor : '#343434', flex : 1}} onPress={handleOnClick}>
-        <View style={{backgroundColor : '#333333', padding : 10, borderRadius : 3}}>
-            <Text style={{color : '#FFFFFF'}}>Relay {props.relayId} {value == 1 ? " *" : ""}</Text>
+    return <TouchableOpacity style={{backgroundColor : COLOR_BACKGROUND, flex : 1, borderRadius : 5}} onPress={handleOnClick}>
+        <View style={{backgroundColor : COLOR_PRIMARY, padding : 10, borderRadius : 5, gap : 5}}>
+            <Text style={{color : '#FFFFFF', textAlign : "center"}}>Relay {props.relayId}</Text>
+            <View style={{height : 3, backgroundColor : (value === 1 ? COLOR_HIGHLIGHT : COLOR_SECONDARY)}}></View>
         </View>
     </TouchableOpacity>
 };

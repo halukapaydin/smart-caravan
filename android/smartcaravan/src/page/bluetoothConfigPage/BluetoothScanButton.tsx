@@ -1,6 +1,7 @@
 import React, {Dispatch, useContext, useEffect, useState} from 'react';
 import {ActivityIndicator, GestureResponderEvent, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {BluetoothManagerContext} from "../../context/BluetoothManagerContext.tsx";
+import {COLOR_HIGHLIGHT, COLOR_PRIMARY, COLOR_SCAN_BUTTON} from "../../util/BluetoothUtil.ts";
 interface BluetoothScanButtonProps {
     onPress: Dispatch<void>,
 }
@@ -19,7 +20,7 @@ const BluetoothScanButton = (props: BluetoothScanButtonProps) => {
 };
 const Styles = StyleSheet.create({
     scanButton: {
-        backgroundColor: '#FF4443',
+        backgroundColor: COLOR_PRIMARY,
         padding: 10,
         borderRadius : 3,
         display: 'flex',
