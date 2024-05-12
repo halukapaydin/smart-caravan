@@ -7,22 +7,30 @@ import {BluetoothManagerContext} from "../../context/BluetoothManagerContext.tsx
 import {COLOR_BACKGROUND} from "../../util/BluetoothUtil.ts";
 import LiquidLevelsContainer from "./LiquidLevelsContainer.tsx";
 import BatteryIcon from "../../components/BatteryIcon.tsx";
+import TemperatureIndicator from "../../components/TemperatureIndicator.tsx";
+import Thermometer from "../../components/Thermometer.tsx";
+import Humidity from "../../components/Humidity.tsx";
 
 interface HomePageProps {
 }
 
 const HomePage = (props: HomePageProps) => {
     let navigation = useNavigation();
-    const {initBluetoothDevice} = useContext(BluetoothManagerContext);
+    const {initBluetoothDevice, sensorsData} = useContext(BluetoothManagerContext);
     useEffect(() => {
         initBluetoothDevice().then(()=>{});
     }, []);
 
-    return <View style={{padding : 10, backgroundColor : COLOR_BACKGROUND}}>
+
+
+    return <View style={{padding : 10, backgroundColor : COLOR_BACKGROUND, justifyContent : "space-evenly", flex : 1}}>
         <RelayButtons/>
         <LiquidLevelsContainer />
-        <View >
-            <BatteryIcon height={120} width={70} value={12.8}/>
+        <View style={{display : "flex", flexDirection : "row", justifyContent : "space-around"}}>
+            <BatteryIcon height={120} width={70} value={sensorsData?.getBatteryVoltage()}/>
+            <Thermometer value={sensorsData?.getTemperatureValue()} height={120} width={70} />
+            <Humidity value={sensorsData?.getHumidityValue()} height={120} width={70} />
+
         </View>
     </View>
 };

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import {StyleSheet, Text, View} from "react-native";
+import {BluetoothManagerContext} from "../context/BluetoothManagerContext.tsx";
 
 interface BatteryIconProps {
     width: number,
@@ -47,7 +48,10 @@ const Style = StyleSheet.create({
 })
 
 const BatteryIcon = (props: BatteryIconProps) => {
-    const {width = 50, height = 100, value = 0} = props;
+    // const {sensorsData, dataUpdateTime} = useContext(BluetoothManagerContext);
+
+
+        const {width = 50, height = 100, value = 0} = props;
     let percent = calculatePercent(value);
     return <View style={[Style.container, {width: width, height: height}]}>
         <View style={[Style.head]}>

@@ -2,11 +2,12 @@ import {BUTTON_VALUE_UNKNOWN} from "./ButtonValue.ts";
 
 export default class SensorValues {
     private buttonsValue: number[] = [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    private humidityValue: number = 0;
-    private temperatureValue: number = 0;
-    private cleanWaterLevel : number = 0;
+    private humidityValue: number = 1;
+    private temperatureValue: number = 1;
+    private cleanWaterLevel : number = 1;
     private grayWaterLevel : number = 30;
     private blackWaterLevel : number = 80;
+    private batteryVoltage : number = 80;
 
 
     getButtonsValue(): number[] {
@@ -59,6 +60,12 @@ export default class SensorValues {
         this.grayWaterLevel = level;
     }
 
+    getBatteryVoltage() : number{
+        return this.batteryVoltage;
+    };
+    setBatteryVoltage(level:number){
+        this.batteryVoltage = level;
+    }
     getBlackWaterLevel() : number{
         return this.blackWaterLevel;
     };
