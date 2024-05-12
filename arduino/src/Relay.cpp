@@ -69,6 +69,14 @@ void initRelays() {
         }
     }
 }
+void resetRelays() {
+    for (int i = COMMAND_KEY_1; i <= COMMAND_KEY_16; ++i) {
+        Relay *pRelay = getRelay(i);
+        if(pRelay != nullptr){
+            pRelay->resetRelay();
+        }
+    }
+}
 
 bool handleRelayCommand(int command) {
     Relay *pRelay = getRelay(command);

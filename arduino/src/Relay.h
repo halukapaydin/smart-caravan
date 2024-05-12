@@ -30,6 +30,10 @@ struct Relay {
         int relayValue = this->state == ON ? LOW : HIGH;
         digitalWrite(this->relayPin, relayValue);
     }
+    void resetRelay() {
+        this->state = OFF;
+        digitalWrite(this->relayPin, HIGH);
+    }
     void write(HardwareSerial *serial) {
         serial->write(this->dataKey);
         serial->write(this->state);
@@ -37,6 +41,8 @@ struct Relay {
 };
 
 void initRelays();
+
+void resetRelays();
 
 Relay *getRelay(int command);
 

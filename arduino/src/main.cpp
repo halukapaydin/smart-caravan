@@ -31,7 +31,7 @@ void handleCommand(int command, HardwareSerial *serial){
         return;
     }
     if(command == COMMAND_KEY_DATA_RESET_RELAYS){
-        initRelays();
+        resetRelays();
         writeSystemDataToSerial(serial);
         writeEndOfRecord(serial);
         return;
