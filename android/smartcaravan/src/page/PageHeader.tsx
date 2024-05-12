@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import {ActivityIndicator, Text, TouchableOpacity, View} from "react-native";
-import {faGear, faHandshake, faHandshakeSlash, faHome} from '@fortawesome/free-solid-svg-icons'
+import {faGear, faHandshake, faHandshakeSlash, faHome, faTruckLoading} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {useNavigation} from "@react-navigation/native";
 import {PAGE_BLUETOOTH_CONFIG, PAGE_HOME} from "././Pages";
@@ -13,7 +13,7 @@ interface ApplicationHeaderProps {
 const PageHeader = (props: ApplicationHeaderProps) => {
     let navigation = useNavigation();
     const {isDeviceConnected, reconnectDevice, disconnectDevice
-        , connectedDevice, connecting} = useContext(BluetoothManagerContext);
+        , connectedDevice, connecting, readAllValues} = useContext(BluetoothManagerContext);
 
     const handleGearIconClick = () => {
         navigation.navigate(PAGE_BLUETOOTH_CONFIG);
@@ -59,6 +59,7 @@ const PageHeader = (props: ApplicationHeaderProps) => {
                 {iconBluetooth}
             </TouchableOpacity>
         </View>
+
         <View>
             <TouchableOpacity onPress={handleGearIconClick}>
                 <FontAwesomeIcon color={"#FFFFFF"} size={24} icon={faGear}/>

@@ -98,14 +98,14 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
         if (discoveredDevices.findIndex(d => (d.id === device.id)) >= 0) {
             return;
         }
-        console.log("device discovered", device);
+        // console.log("device discovered", device);
         discoveredDevices.push(device);
-        console.log("all device discovered", discoveredDevices);
+        // console.log("all device discovered", discoveredDevices);
         setDiscoveredDevices(Object.assign([], discoveredDevices));
     }
     const onScanStopped = () => {
         setScanning(false);
-        console.log("scan stopped")
+        // console.log("scan stopped")
     }
     const setLastConnectedDevice = async (device: BluetoothDevice) => {
         try {
@@ -143,7 +143,6 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
                 setLastConnectedDevice(bluetoothDevice).then();
                 console.log("connected")
                 await BleManager.startNotification(bluetoothDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID);
-                readAllValues();
             })
             .catch(err => {
                 setBluetoothConnectionError(err);
@@ -163,14 +162,14 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
 
         bleManager.isPeripheralConnected(connectedDevice.id)
             .then((connected) => {
-                console.log("isPeripheralConnected", connected)
+                // console.log("isPeripheralConnected", connected)
                 setConnecting(false);
                 if (!connected) {
                     setConnectedDevice(undefined);
                     return;
                 }
                 bleManager.disconnect(connectedDevice.id).then(async res => {
-                    console.log("isPeripheralConnected", connectedDevice.id)
+                    // console.log("isPeripheralConnected", connectedDevice.id)
 
                     // try {
                     //     await bleManager.stopNotification(connectedDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID);
@@ -181,8 +180,6 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
                     // }
                     setConnectedDevice(undefined);
                     console.log("disconnected ")
-
-
                 })
             })
     }

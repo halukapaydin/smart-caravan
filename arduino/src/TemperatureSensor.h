@@ -78,8 +78,8 @@ struct TemperatureSensor {
 
         // WRITE TO RIGHT VARS
         // as bits[1] and bits[3] are allways zero they are omitted in formulas.
-        this->humidity = bits[0];
-        this->temperature = bits[2];
+        this->temperature = bits[0];
+        this->humidity = bits[2];
 
         uint8_t sum = bits[0] + bits[2];
 

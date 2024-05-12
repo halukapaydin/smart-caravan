@@ -10,18 +10,19 @@ import BatteryIcon from "../../components/BatteryIcon.tsx";
 import TemperatureIndicator from "../../components/TemperatureIndicator.tsx";
 import Thermometer from "../../components/Thermometer.tsx";
 import Humidity from "../../components/Humidity.tsx";
+import relayButton from "./RelayButton.tsx";
 
 interface HomePageProps {
 }
 
 const HomePage = (props: HomePageProps) => {
-    let navigation = useNavigation();
-    const {initBluetoothDevice, sensorsData} = useContext(BluetoothManagerContext);
+    const {readAllValues,initBluetoothDevice, sensorsData, connectedDevice, readHumidityAndTemperatureValue} = useContext(BluetoothManagerContext);
     useEffect(() => {
-        initBluetoothDevice().then(()=>{});
-    }, []);
+        readAllValues();
+        return ()=>{
+        }
 
-
+    }, [connectedDevice]);
 
     return <View style={{padding : 10, backgroundColor : COLOR_BACKGROUND, justifyContent : "space-evenly", flex : 1}}>
         <RelayButtons/>
@@ -30,7 +31,6 @@ const HomePage = (props: HomePageProps) => {
             <BatteryIcon height={120} width={70} value={sensorsData?.getBatteryVoltage()}/>
             <Thermometer value={sensorsData?.getTemperatureValue()} height={120} width={70} />
             <Humidity value={sensorsData?.getHumidityValue()} height={120} width={70} />
-
         </View>
     </View>
 };

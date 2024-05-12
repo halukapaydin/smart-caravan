@@ -15,16 +15,16 @@ const PERMISSIONS = [
 export const grantBluetoothPermissions = async () => {
     if (Platform.OS === 'android' && Platform.Version >= 23) {
 
-        Object.keys(PermissionsAndroid.PERMISSIONS).forEach(e => {
-            console.log(e);
-        })
-        console.log("----------------------------")
+        // Object.keys(PermissionsAndroid.PERMISSIONS).forEach(e => {
+            // console.log(e);
+        // })
+        // console.log("----------------------------")
 
         try {
             for (const permission of PERMISSIONS) {
                 try {
                     const g = await PermissionsAndroid.request(permission);
-                    console.log(permission + " state is " + g);
+                    // console.log(permission + " state is " + g);
                 } catch (e) {
                     console.log('Error requesting location permission:', e);
                 }
@@ -59,13 +59,21 @@ export const parseBluetoothData = (data: number[], sensorValue: SensorValues) =>
         console.log(`Key [${key}] : ${value}`);
         if (key >= 1 && key <= 16) {
             sensorValue.setButtonValue(key, value);
-        } else if (key == 18) {
+        } else if (key === 18) {
             sensorValue.setHumidityValue(value);
-        } else if (key == 17) {
+        } else if (key === 17) {
             sensorValue.setTemperatureValue(value);
+        } else if (key === 19) {
+            sensorValue.setCleanWaterLevel(value);
+        } else if (key == 20) {
+            sensorValue.setGrayWaterLevel(value);
+        } else if (key == 21) {
+            sensorValue.setBlackWaterLevel(value);
+        } else if (key == 22) {
+            sensorValue.setBatteryVoltage(value);
         }
     }
-    console.log("parse data", data, sensorValue);
+    // console.log("parse data", data, sensorValue);
     return sensorValue;
 }
 
@@ -80,5 +88,5 @@ export const COLOR_HIGHLIGHT = "#ffff00";
 export const SERVICE_UUID: string = "ffe0";
 export const CHARACTERISTIC_UUID: string = "ffe1";
 export const COMMAND_KEY_DATA_SEND_TEMPERATURE_AND_HUMIDITY: number = 18;
-export const COMMAND_KEY_DATA_SEND_ALL: number = 98;
-export const COMMAND_KEY_DATA_RESET_RELAYS: number = 99;
+export const COMMAND_KEY_DATA_SEND_ALL: number = 20;
+export const COMMAND_KEY_DATA_RESET_RELAYS: number = 21;
