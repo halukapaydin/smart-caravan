@@ -32,9 +32,9 @@ const PageHeader = (props: ApplicationHeaderProps) => {
     if(connecting){
         iconBluetooth = <ActivityIndicator />
     }else if (isDeviceConnected(undefined)) {
-        iconBluetooth = <FontAwesomeIcon size={24} color={COLOR_HIGHLIGHT} icon={faHandshake}/>
+        iconBluetooth = <FontAwesomeIcon size={30} color={COLOR_HIGHLIGHT} icon={faHandshake}/>
     } else {
-        iconBluetooth = <FontAwesomeIcon size={24} color={"#FFFFFF"} icon={faHandshakeSlash}/>
+        iconBluetooth = <FontAwesomeIcon size={30} color={"#FFFFFF"} icon={faHandshakeSlash}/>
     }
 
     return <View
@@ -48,11 +48,11 @@ const PageHeader = (props: ApplicationHeaderProps) => {
         }}>
         <View>
             <TouchableOpacity onPress={handleHomeIconClick}>
-                <FontAwesomeIcon color={"#FFFFFF"} icon={faHome} size={24}/>
+                <FontAwesomeIcon color={"#FFFFFF"} icon={faHome} size={30}/>
             </TouchableOpacity>
         </View>
         <View style={{flex: 1}}>
-            <Text style={{color: "#FFFFFF", fontSize: 18, textAlign: 'center'}}>AVARE YOLCULAR</Text>
+            <Text style={{color: "#FFFFFF", fontSize: 20, textAlign: 'center'}}>AVARE YOLCULAR</Text>
         </View>
         <View>
             <TouchableOpacity onPress={handleBluetoothIconClick}>
@@ -62,7 +62,7 @@ const PageHeader = (props: ApplicationHeaderProps) => {
 
         <View>
             <TouchableOpacity onPress={handleGearIconClick}>
-                <FontAwesomeIcon color={"#FFFFFF"} size={24} icon={faGear}/>
+                <FontAwesomeIcon color={"#FFFFFF"} size={30} icon={faGear}/>
             </TouchableOpacity>
         </View>
     </View>

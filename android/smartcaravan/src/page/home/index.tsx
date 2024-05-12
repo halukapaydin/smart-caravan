@@ -18,6 +18,9 @@ interface HomePageProps {
 const HomePage = (props: HomePageProps) => {
     const {readAllValues,initBluetoothDevice, sensorsData, connectedDevice, readHumidityAndTemperatureValue} = useContext(BluetoothManagerContext);
     useEffect(() => {
+        if(!connectedDevice){
+            return ;
+        }
         readAllValues();
         return ()=>{
         }

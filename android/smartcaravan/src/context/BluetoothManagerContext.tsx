@@ -1,6 +1,6 @@
 import React, {Dispatch, DispatchWithoutAction, useContext, useEffect, useMemo, useState} from "react";
 import BluetoothDevice from "../model/BluetoothDevice.ts";
-import {NativeEventEmitter, NativeModules, ToastAndroid, View} from "react-native";
+import {InteractionManager, NativeEventEmitter, NativeModules, ToastAndroid, View} from "react-native";
 import BleManager, {Peripheral} from "react-native-ble-manager";
 import {EmitterSubscription} from "react-native/Libraries/vendor/emitter/EventEmitter";
 import {
@@ -33,7 +33,6 @@ interface IBluetoothManagerContextValue {
     reconnectDevice: DispatchWithoutAction,
     scanStart: DispatchWithoutAction,
     scanStop: DispatchWithoutAction,
-    bluetoothConnectionError: string,
     bluetoothState: string,
     isDeviceConnected: (device: BluetoothDevice | undefined) => boolean,
     initBluetoothDevice: () => Promise<void>;
@@ -58,7 +57,6 @@ export const BluetoothManagerContext = React.createContext<IBluetoothManagerCont
     connectedDevice: new BluetoothDevice(),
     pairedDevices: [],
     discoveredDevices: [],
-    bluetoothConnectionError: "",
     bluetoothState: "",
     connectDevice: (device: BluetoothDevice) => {
     },
@@ -84,7 +82,6 @@ export const BluetoothManagerContext = React.createContext<IBluetoothManagerCont
 });
 
 export const BluetoothManagerContextProvider = ({children}: { children: any }) => {
-    const [bluetoothConnectionError, setBluetoothConnectionError] = useState<string>("");
     const [bluetoothState, setBluetoothState] = useState<string>("");
     const [scanning, setScanning] = useState(false);
     const [connecting, setConnecting] = useState(false);
@@ -142,10 +139,9 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
                 setConnectedDevice(bluetoothDevice);
                 setLastConnectedDevice(bluetoothDevice).then();
                 console.log("connected")
-                await BleManager.startNotification(bluetoothDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID);
+                await bleManager.startNotification(bluetoothDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID);
             })
             .catch(err => {
-                setBluetoothConnectionError(err);
                 ToastAndroid.show("Error : " + err, 5);
                 console.log("Error", err);
             })
@@ -347,7 +343,6 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
             scanStart: scanStart,
             scanStop: scanStop,
             isDeviceConnected: isDeviceConnected,
-            bluetoothConnectionError: bluetoothConnectionError,
             bluetoothState: bluetoothState,
             initBluetoothDevice: initBluetoothDevice,
             readAllValues: readAllValues,

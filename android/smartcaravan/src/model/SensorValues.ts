@@ -7,7 +7,7 @@ export default class SensorValues {
     private cleanWaterLevel : number = 0;
     private grayWaterLevel : number = 0;
     private blackWaterLevel : number = 0;
-    private batteryVoltage : number = 0;
+    private batteryVoltage : number = 125;
 
 
     getButtonsValue(): number[] {

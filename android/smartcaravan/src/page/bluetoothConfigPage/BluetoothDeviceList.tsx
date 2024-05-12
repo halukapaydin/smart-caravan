@@ -23,8 +23,8 @@ const BluetoothDeviceList = (props: BluetoothDeviceListProps) => {
             data?.map(d => {
                 return <View key={d.id} style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                     <View style={{flexDirection: 'column'}}>
-                        <Text style={{fontSize: 16, color: '#000000'}}>{d.name}</Text>
-                        <Text style={{fontSize: 10, color: '#000000'}}>{d.id}</Text>
+                        <Text style={{fontSize: 16, color: '#FFFFFF'}}>{d.name}</Text>
+                        <Text style={{fontSize: 10, color: '#FFFFFF'}}>{d.id}</Text>
                     </View>
                     <View>
                         <ConnectButton device={d}/>
@@ -62,9 +62,9 @@ const ConnectButton = ({device}: { device: BluetoothDevice}) => {
         }
     }
 
-    return <TouchableOpacity onPress={handleButtonClick} style={{backgroundColor: connecting ?  '#ffb5b5' : '#FF4443', borderRadius: 3}}>
+    return <TouchableOpacity onPress={handleButtonClick} style={{backgroundColor: connecting ?  '#ffb5b5' : '#5b5b5b', borderRadius: 3}}>
         <Text style={{
-            paddingHorizontal: 8,
+            paddingHorizontal: 15,
             paddingVertical: 5,
             color: '#ffffff'
         }} disabled={connecting}>{isDeviceConnected(device) ? "Bağlantıyı kes" : "Bağlan"}</Text>

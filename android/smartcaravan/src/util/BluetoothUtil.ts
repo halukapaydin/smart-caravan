@@ -56,7 +56,6 @@ export const parseBluetoothData = (data: number[], sensorValue: SensorValues) =>
             break;
         }
         let value = data[++i];
-        console.log(`Key [${key}] : ${value}`);
         if (key >= 1 && key <= 16) {
             sensorValue.setButtonValue(key, value);
         } else if (key === 18) {
