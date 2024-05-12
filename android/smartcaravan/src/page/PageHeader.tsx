@@ -34,7 +34,7 @@ const PageHeader = (props: ApplicationHeaderProps) => {
     }else if (isDeviceConnected(undefined)) {
         iconBluetooth = <FontAwesomeIcon size={24} color={COLOR_HIGHLIGHT} icon={faHandshake}/>
     } else {
-        iconBluetooth = <FontAwesomeIcon size={24} color={COLOR_SECONDARY} icon={faHandshakeSlash}/>
+        iconBluetooth = <FontAwesomeIcon size={24} color={"#FFFFFF"} icon={faHandshakeSlash}/>
     }
 
     return <View

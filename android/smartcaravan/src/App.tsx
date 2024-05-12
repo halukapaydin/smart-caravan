@@ -14,7 +14,7 @@ const Stack = createNativeStackNavigator();
 const App = () => {
     return (
         <BluetoothManagerContextProvider>
-            <StatusBar hidden={false}/>
+            <StatusBar hidden={true}/>
             <NavigationContainer>
                 <Stack.Navigator
                     initialRouteName={PAGE_HOME}

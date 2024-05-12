@@ -4,9 +4,14 @@ import {NativeEventEmitter, NativeModules, ToastAndroid, View} from "react-nativ
 import BleManager, {Peripheral} from "react-native-ble-manager";
 import {EmitterSubscription} from "react-native/Libraries/vendor/emitter/EventEmitter";
 import {
-    CHARACTERISTIC_UUID, COLOR_BACKGROUND, COMMAND_KEY_DATA_SEND_ALL, COMMAND_KEY_DATA_SEND_TEMPERATURE_AND_HUMIDITY,
+    CHARACTERISTIC_UUID,
+    COLOR_BACKGROUND,
+    COMMAND_KEY_DATA_RESET_RELAYS,
+    COMMAND_KEY_DATA_SEND_ALL,
+    COMMAND_KEY_DATA_SEND_TEMPERATURE_AND_HUMIDITY,
     convertPeripheralToBluetoothDevice,
-    grantBluetoothPermissions, parseBluetoothData,
+    grantBluetoothPermissions,
+    parseBluetoothData,
     SERVICE_UUID
 } from "../util/BluetoothUtil.ts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -57,7 +62,7 @@ export const BluetoothManagerContext = React.createContext<IBluetoothManagerCont
     bluetoothState: "",
     connectDevice: (device: BluetoothDevice) => {
     },
-    disconnectDevice: (device: BluetoothDevice) => {
+    disconnectDevice: (device: BluetoothDevice|undefined) => {
     },
     isDeviceConnected: (device: BluetoothDevice | undefined) => false,
     fetchPairedDevices: () => [],
@@ -138,6 +143,7 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
                 setLastConnectedDevice(bluetoothDevice).then();
                 console.log("connected")
                 await BleManager.startNotification(bluetoothDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID);
+                readAllValues();
             })
             .catch(err => {
                 setBluetoothConnectionError(err);
@@ -313,6 +319,9 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
         console.log("send command", command);
         // writeDataOnConnectedDevice(parseInt(hex));
         writeDataOnConnectedDevice(command);
+    }
+    const resetRelays = () => {
+        sendCommand(COMMAND_KEY_DATA_RESET_RELAYS);
     }
     const readAllValues = () => {
         sendCommand(COMMAND_KEY_DATA_SEND_ALL);

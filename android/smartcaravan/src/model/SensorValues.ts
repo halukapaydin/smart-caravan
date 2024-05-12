@@ -1,7 +1,7 @@
 import {BUTTON_VALUE_UNKNOWN} from "./ButtonValue.ts";
 
 export default class SensorValues {
-    private buttonsValue: number[] = [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    private buttonsValue: number[] = [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     private humidityValue: number = 1;
     private temperatureValue: number = 1;
     private cleanWaterLevel : number = 1;
@@ -23,11 +23,21 @@ export default class SensorValues {
             return BUTTON_VALUE_UNKNOWN;
         }
 
-        return this.buttonsValue[buttonId];
+        return this.buttonsValue[buttonId-1];
     }
 
     setButtonsValue(value: number[]) {
         this.buttonsValue = value;
+    }
+    setButtonValue(buttonId:number, value: number) {
+        if(!this.buttonsValue){
+            return BUTTON_VALUE_UNKNOWN;
+        }
+
+        if(buttonId >= this.buttonsValue.length){
+            return BUTTON_VALUE_UNKNOWN;
+        }
+        this.buttonsValue[buttonId-1] = value;
     }
 
     getHumidityValue(): number {
