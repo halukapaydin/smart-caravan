@@ -5,7 +5,6 @@ import {BluetoothManagerContext} from "../context/BluetoothManagerContext.tsx";
 interface ThermometerProps {
     width: number;
     height: number;
-    value : number;
 }
 
 const Thermometer = (props: ThermometerProps) => {
@@ -17,7 +16,7 @@ const Thermometer = (props: ThermometerProps) => {
             <Image style={{width: "70%", height: "70%"}} source={require("../../assets/thermometer.png")}/>
             <View style={{alignItems : "center"}}>
                 <Text style={{color: "#FFFFFF"}}>Sıcaklık</Text>
-                <Text style={{color: "#FFFFFF"}}>{props.value} C</Text>
+                <Text style={{color: "#FFFFFF"}}>{value} C</Text>
             </View>
         </View>
         </TouchableOpacity>

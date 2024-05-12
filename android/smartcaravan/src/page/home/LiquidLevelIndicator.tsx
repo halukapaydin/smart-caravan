@@ -2,14 +2,12 @@ import React, {useEffect, useState} from 'react';
 import {Canvas, Circle, Group, Skia, Text as SkiaText, useFont} from "@shopify/react-native-skia";
 import {area, scaleLinear} from "d3";
 import {Text, View} from "react-native";
-import dd from "../../../assets/Roboto-Bold.ttf";
-import {COLOR_BACKGROUND} from "../../util/BluetoothUtil.ts";
 
 interface LiquidLevelIndicatorProps {
     value: number;
     size: number;
-    color :string;
-    label : string;
+    color: string;
+    label: string;
 }
 
 const LiquidLevelIndicator = (props: LiquidLevelIndicatorProps) => {
@@ -68,16 +66,18 @@ const LiquidLevelIndicator = (props: LiquidLevelIndicatorProps) => {
         });
 
     const clipSvgPath = clipArea(data); // convert data points as wave area and output as svg path string
+    // @ts-ignore
     const clipPath = Skia.Path.MakeFromSVGString(clipSvgPath); // convert svg path string to skia format path
     const transformMatrix = Skia.Matrix(); // create Skia tranform matrix
     transformMatrix.translate(
         0, // translate x to 0, basically do nothing
         fillCircleMargin + (1 - fillPercent) * fillCircleRadius * 2 - waveHeight, // translate y to position where lower point of the wave in the innerCircleHeight * fillPercent
     );
+    // @ts-ignore
     clipPath.transform(transformMatrix); // apply transform matrix to our clip path
 
     const fontSize = radius / 2; // font size is half of the radius
-    const font = useFont(dd, fontSize); // create font with font file and size
+    const font = useFont("../../../assets/Roboto-Bold.ttf", fontSize); // create font with font file and size
 
     const text = `${value}%`; // convert value to string
     const textWidth = font?.getTextWidth(text) ?? 0; // get text width
@@ -86,7 +86,7 @@ const LiquidLevelIndicator = (props: LiquidLevelIndicatorProps) => {
 
 
     return (
-        <View style={{display : "flex", gap : 5}}>
+        <View style={{display: "flex", gap: 5}}>
             <Canvas style={{width: size, height: size}}>
                 <Circle
                     cx={radius}
@@ -115,7 +115,7 @@ const LiquidLevelIndicator = (props: LiquidLevelIndicatorProps) => {
                     transform={textTransform}
                 />
             </Canvas>
-            <Text style={{color : "#FFFFFF", textAlign : "center"}}>{props.label}</Text>
+            <Text style={{color: "#FFFFFF", textAlign: "center"}}>{props.label}</Text>
         </View>
 
     );
