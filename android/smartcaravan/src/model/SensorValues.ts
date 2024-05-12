@@ -5,8 +5,8 @@ export default class SensorValues {
     private humidityValue: number = 0;
     private temperatureValue: number = 0;
     private cleanWaterLevel : number = 0;
-    private grayWaterLevel : number = 0;
-    private blackWaterLevel : number = 0;
+    private grayWaterLevel : number = 30;
+    private blackWaterLevel : number = 80;
 
 
     getButtonsValue(): number[] {

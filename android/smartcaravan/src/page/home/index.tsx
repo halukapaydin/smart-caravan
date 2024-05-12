@@ -6,6 +6,7 @@ import RelayButtons from "./RelayButtons.tsx";
 import {BluetoothManagerContext} from "../../context/BluetoothManagerContext.tsx";
 import {COLOR_BACKGROUND} from "../../util/BluetoothUtil.ts";
 import LiquidLevelsContainer from "./LiquidLevelsContainer.tsx";
+import BatteryIcon from "../../components/BatteryIcon.tsx";
 
 interface HomePageProps {
 }
@@ -20,6 +21,9 @@ const HomePage = (props: HomePageProps) => {
     return <View style={{padding : 10, backgroundColor : COLOR_BACKGROUND}}>
         <RelayButtons/>
         <LiquidLevelsContainer />
+        <View >
+            <BatteryIcon height={120} width={70} value={12.8}/>
+        </View>
     </View>
 };
 export default HomePage;

@@ -111,7 +111,7 @@ const LiquidLevelIndicator = (props: LiquidLevelIndicatorProps) => {
                     x={textTranslateX}
                     y={fontSize}
                     text={text}
-                    color={props.color}
+                    color={"#FFFFFF"}
                     transform={textTransform}
                 />
             </Canvas>
