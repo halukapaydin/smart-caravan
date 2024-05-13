@@ -4,7 +4,7 @@ import {faGear, faHandshake, faHandshakeSlash, faHome, faTruckLoading} from '@fo
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {useNavigation} from "@react-navigation/native";
 import {PAGE_BLUETOOTH_CONFIG, PAGE_HOME} from "././Pages";
-import {BluetoothManagerContext} from "../context/BluetoothManagerContext.tsx";
+import {BluetoothManagerContext, IBluetoothManagerContextValue} from "../context/BluetoothManagerContext.tsx";
 import {COLOR_BACKGROUND, COLOR_HIGHLIGHT, COLOR_SECONDARY} from "../util/BluetoothUtil.ts";
 
 interface ApplicationHeaderProps {
@@ -12,8 +12,8 @@ interface ApplicationHeaderProps {
 
 const PageHeader = (props: ApplicationHeaderProps) => {
     let navigation = useNavigation();
-    const {isDeviceConnected, reconnectDevice, disconnectDevice
-        , connectedDevice, connecting, readAllValues} = useContext(BluetoothManagerContext);
+    const { reconnectDevice, disconnectDevice
+        , connectedDevice, connecting, readAllValues} = useContext<IBluetoothManagerContextValue>(BluetoothManagerContext);
 
     const handleGearIconClick = () => {
         navigation.navigate(PAGE_BLUETOOTH_CONFIG);
@@ -22,16 +22,20 @@ const PageHeader = (props: ApplicationHeaderProps) => {
         navigation.navigate(PAGE_HOME);
     }
     const handleBluetoothIconClick = () => {
-        if (!isDeviceConnected(undefined)) {
-            reconnectDevice();
+        if (!connectedDevice) {
+            if (reconnectDevice) {
+                reconnectDevice();
+            }
         } else {
-            disconnectDevice(connectedDevice);
+            if (disconnectDevice) {
+                disconnectDevice(connectedDevice);
+            }
         }
     }
     let iconBluetooth = undefined;
     if(connecting){
         iconBluetooth = <ActivityIndicator />
-    }else if (isDeviceConnected(undefined)) {
+    }else if (connectedDevice) {
         iconBluetooth = <FontAwesomeIcon size={30} color={COLOR_HIGHLIGHT} icon={faHandshake}/>
     } else {
         iconBluetooth = <FontAwesomeIcon size={30} color={"#FFFFFF"} icon={faHandshakeSlash}/>

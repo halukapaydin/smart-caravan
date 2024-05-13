@@ -6,6 +6,7 @@ import PageHeader from "./PageHeader.tsx";
 import HomePage from "./home";
 import BluetoothConfigPage from "./bluetoothConfigPage";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import {BluetoothManagerContext} from "../context/BluetoothManagerContext.tsx";
 
 const Stack = createNativeStackNavigator();
 
@@ -14,10 +15,14 @@ interface PageContainerProps {
 
 
 const PageContainer = (props: PageContainerProps) => {
+    const {startReloadAllValue, stopReloadAllValue} = useContext(BluetoothManagerContext);
     const onHomeFocus = () => {
+        startReloadAllValue();
     }
 
     const onHomeBlur = () => {
+
+        stopReloadAllValue();
     }
 
     useEffect(() => {
