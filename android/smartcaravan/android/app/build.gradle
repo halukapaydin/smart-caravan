@@ -85,9 +85,9 @@ android {
     signingConfigs {
         release {
           storeFile file('smartcaravan.keystore')
-          storePassword '8164653'
+          storePassword 'heyhey123'
           keyAlias 'smartcaravan'
-          keyPassword '8164653'
+          keyPassword 'heyhey123'
         }
         debug {
             storeFile file('debug.keystore')

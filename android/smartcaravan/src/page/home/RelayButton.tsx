@@ -28,7 +28,7 @@ const RelayButton = (props: RelayButtonProps) => {
     return <TouchableOpacity style={{backgroundColor : COLOR_BACKGROUND, flex : 1, borderRadius : 5}} onPress={handleOnClick}>
         <View style={{backgroundColor : COLOR_PRIMARY, paddingTop : 20, paddingBottom : 0, borderRadius : 10, gap : 5}}>
             <Text style={{color : '#FFFFFF', textAlign : "center"}} numberOfLines={1}>Relay {props.relayId}</Text>
-            <View style={{paddingHorizontal : 10, paddingVertical : 15}}>
+            <View style={{paddingHorizontal : 10, paddingVertical : 10}}>
                 <View style={{height : 3, backgroundColor : (value === 1 ? COLOR_HIGHLIGHT : COLOR_SECONDARY)}}></View>
             </View>
         </View>
