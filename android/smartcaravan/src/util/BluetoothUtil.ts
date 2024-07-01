@@ -1,5 +1,5 @@
 import {PermissionsAndroid, Platform} from "react-native";
-import {Peripheral} from "react-native-ble-manager";
+import {Peripheral, PeripheralInfo} from "react-native-ble-manager";
 import BluetoothDevice from "../model/BluetoothDevice.ts";
 import SensorValues from "../model/SensorValues.ts";
 
@@ -42,11 +42,34 @@ export const convertPeripheralToBluetoothDevice = (peripheral: Peripheral | any)
         peripheral.name,
         peripheral.id,
         peripheral.rssi,
-        peripheral.connected,
-        peripheral.serviceUUIDs
+        peripheral.connected
     );
     return device;
 }
+// @ts-ignore
+export const convertPeripheralInfoToBluetoothDevice = (peripheral: PeripheralInfo | any) => {
+    let _service = undefined;
+    let _characteristic = undefined;
+    for (const serviceUUID of peripheral.advertising.serviceUUIDs) {
+        for (const characteristic of peripheral.characteristics) {
+            if(characteristic.service === serviceUUID){
+                _service = serviceUUID;
+                _characteristic = characteristic.characteristic;
+            }
+        }
+    }
+
+    let device = new BluetoothDevice(
+        peripheral.name,
+        peripheral.id,
+        peripheral.rssi,
+        peripheral.connected,
+        _service,
+        _characteristic
+    );
+    return device;
+}
+
 
 
 export const parseBluetoothData = (data: number[], sensorValue: SensorValues) => {
@@ -77,6 +100,7 @@ export const parseBluetoothData = (data: number[], sensorValue: SensorValues) =>
 }
 
 
+export const COLOR_WHITE = "#FFFFFF";
 export const COLOR_PRIMARY = "#3b3b3b";
 export const COLOR_SECONDARY = "#232323";
 export const COLOR_BACKGROUND = "#252525";

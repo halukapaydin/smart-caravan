@@ -7,7 +7,7 @@ import {
     CHARACTERISTIC_UUID,
     COMMAND_KEY_DATA_RESET_RELAYS,
     COMMAND_KEY_DATA_SEND_ALL,
-    COMMAND_KEY_DATA_SEND_TEMPERATURE_AND_HUMIDITY,
+    COMMAND_KEY_DATA_SEND_TEMPERATURE_AND_HUMIDITY, convertPeripheralInfoToBluetoothDevice,
     convertPeripheralToBluetoothDevice,
     grantBluetoothPermissions,
     parseBluetoothData,
@@ -15,6 +15,7 @@ import {
 } from "../util/BluetoothUtil.ts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SensorValues from "../model/SensorValues.ts";
+import Orientation, {OrientationType} from "react-native-orientation-locker";
 
 const BleManagerModule = NativeModules.BleManager;
 
@@ -41,6 +42,7 @@ export interface IBluetoothManagerContextValue {
     sendCommand: Dispatch<number>;
     startReloadAllValue: DispatchWithoutAction,
     stopReloadAllValue: DispatchWithoutAction,
+    isScreenLandscape:()=>boolean
 }
 
 
@@ -65,8 +67,9 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
     const [discoveredDevices, setDiscoveredDevices] = useState<BluetoothDevice[]>([]);
     const [data, setData] = useState<SensorValues>(new SensorValues());
     const [dataUpdateTime, setDataUpdateTime] = useState(0);
-
     const [reloadAllValue, setReloadAllValue] = useState<number>(0);
+    const [screenOrientation, setScreenOrientation] = useState<OrientationType>(Orientation.getInitialOrientation);
+
 
     const onDeviceDiscovered = (device: BluetoothDevice) => {
         if (discoveredDevices.findIndex(d => (d.id === device.id)) >= 0) {
@@ -83,6 +86,10 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
     }
     useEffect(() => {
         readAllValues();
+        Orientation.addDeviceOrientationListener((deviceOrientation)=>{
+            setScreenOrientation(deviceOrientation);
+        })
+
     }, [reloadAllValue]);
 
     const setLastConnectedDevice = async (device: BluetoothDevice) => {
@@ -116,12 +123,12 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
         bleManager.connect(device.id, {autoconnect: true})
             .then(async res => {
                 const peri = await bleManager.retrieveServices(device.id);
-                // console.log("peri", peri);
-                let bluetoothDevice = device.clone();
+                console.log("peri", peri);
+                let bluetoothDevice = convertPeripheralInfoToBluetoothDevice(peri);
                 setConnectedDevice(bluetoothDevice);
                 setLastConnectedDevice(bluetoothDevice).then();
                 console.log("connected")
-                await bleManager.startNotification(bluetoothDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID);
+                await bleManager.startNotification(bluetoothDevice.id, bluetoothDevice.serviceUUID, bluetoothDevice.characteristic);
                 startReloadAllValue();
             })
             .catch(err => {
@@ -309,7 +316,7 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
         if (!connectedDevice) {
             return;
         }
-        bleManager.writeWithoutResponse(connectedDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID, [data])
+        bleManager.writeWithoutResponse(connectedDevice.id, connectedDevice.serviceUUID, connectedDevice.characteristic, [data])
             .then((res) => {
                 // console.log("res writeWithoutResponse", res);
             })
@@ -358,6 +365,13 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
 
     }
 
+    const isScreenLandscape = ()=>{
+        if(screenOrientation === OrientationType.UNKNOWN){
+            return false;
+        }
+        return screenOrientation !== OrientationType.PORTRAIT;
+    }
+
     return <BluetoothManagerContext.Provider value={
         {
             scanning: scanning,
@@ -381,7 +395,8 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
             readRelayButtonValue: readRelayButtonValue,
             dataUpdateTime: dataUpdateTime,
             sensorsData: data,
-            sendCommand: sendCommand
+            sendCommand: sendCommand,
+            isScreenLandscape: isScreenLandscape
         }
     }>
         {children}

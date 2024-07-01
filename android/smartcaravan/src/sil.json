@@ -1,12 +1,32 @@
 {
   "advertising": {
+    "isConnectable": true,
+    "localName": "BT05",
+    "manufacturerData": {
+      "a759": [
+        Object
+      ]
+    },
+    "manufacturerRawData": {
+      "CDVType": "ArrayBuffer",
+      "bytes": [
+        Array
+      ],
+      "data": "AACnWYigqUrItRQ0"
+    },
     "rawData": {
       "CDVType": "ArrayBuffer",
       "bytes": [
         Array
       ],
-      "data": ""
-    }
+      "data": "AgEGBQLg/+H/C/9Zp4igqUrItRQ0BQlCVDA1BRIBAAEAAgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    },
+    "serviceData": {},
+    "serviceUUIDs": [
+      "ffe0",
+      "ffe1"
+    ],
+    "txPowerLevel": 0
   },
   "characteristics": [
     {
@@ -130,7 +150,7 @@
   ],
   "id": "34:14:B5:C8:4A:A9",
   "name": "BT05",
-  "rssi": 0,
+  "rssi": -74,
   "services": [
     {
       "uuid": "1800"

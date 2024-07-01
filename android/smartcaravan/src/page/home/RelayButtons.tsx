@@ -37,14 +37,8 @@ const RelayButtons = (props: RelayButtonsProps) => {
         <View style={[Styles.line]}>
             <RelayButton relayId={9}/>
             <RelayButton relayId={10}/>
-            <RelayButton relayId={11}/>
-            <RelayButton relayId={12}/>
-        </View>
-        <View style={[Styles.line]}>
-            <RelayButton relayId={13}/>
-            <RelayButton relayId={14}/>
-            <RelayButton relayId={15}/>
-            <RelayButton relayId={16}/>
+            <RelayButton relayId={20}/>
+            <RelayButton relayId={21}/>
         </View>
     </View>
 };

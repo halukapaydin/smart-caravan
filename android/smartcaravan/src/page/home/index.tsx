@@ -5,6 +5,7 @@ import {BluetoothManagerContext} from "../../context/BluetoothManagerContext.tsx
 import {COLOR_BACKGROUND} from "../../util/BluetoothUtil.ts";
 import LiquidLevelsContainer from "./LiquidLevelsContainer.tsx";
 import SensorsContainer from "./SensorsContainer.tsx";
+import Orientation from 'react-native-orientation-locker';
 
 interface HomePageProps {
 }
@@ -26,32 +27,13 @@ const Styles = StyleSheet.create({
 })
 
 const HomePage = (props: HomePageProps) => {
-    const [screen, setScreen] = useState(Dimensions.get("window"));
-    const getOrientation = ()=>{
-        if (screen.width > screen.height) {
-            return 'LANDSCAPE';
-        }else {
-            return 'PORTRAIT';
-        }
-    }
-
-    const getStyle = ()=>{
-        if (getOrientation() === 'LANDSCAPE') {
-            return Styles.containerLandscape;
-        } else {
-            return Styles.containerPortrait;
-        }
-    }
-
-    const style = getStyle();
-    console.log("style", getStyle(), getOrientation());
-
     const {
         readAllValues,
         initBluetoothDevice,
         sensorsData,
         connectedDevice,
-        readHumidityAndTemperatureValue
+        readHumidityAndTemperatureValue,
+        isScreenLandscape
     } = useContext(BluetoothManagerContext);
     useEffect(() => {
         if (!connectedDevice) {
@@ -62,6 +44,14 @@ const HomePage = (props: HomePageProps) => {
         }
 
     }, [connectedDevice]);
+
+    const getStyle = ()=>{
+        if (isScreenLandscape()) {
+            return Styles.containerLandscape;
+        } else {
+            return Styles.containerPortrait;
+        }
+    }
 
 
     return <View style={[Styles.container, getStyle()]}>

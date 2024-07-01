@@ -10,7 +10,11 @@ interface BluetoothConfigPageProps {
 }
 
 export default (props: BluetoothConfigPageProps) => {
-    const {fetchPairedDevices, pairedDevices, discoveredDevices, scanStart, scanStop, scanning, initBluetoothDevice } = useContext(BluetoothManagerContext);
+    const {fetchPairedDevices, pairedDevices, discoveredDevices,
+        scanStart, scanStop, scanning, initBluetoothDevice,
+        isScreenLandscape
+
+    } = useContext(BluetoothManagerContext);
     const handleScanClick = () => {
         if(scanning){
             scanStop();
@@ -32,10 +36,17 @@ export default (props: BluetoothConfigPageProps) => {
 
     return <View style={{gap: 20, display: 'flex', flex: 1}}>
         <BluetoothScanButton onPress={handleScanClick}/>
-        <Text style={[Styles.deviceTitle]}>Eşleşen Cihazlar</Text>
-        <BluetoothDeviceList data={pairedDevices} />
-        <Text style={[Styles.deviceTitle]}>Kullanılabilir Cihazlar</Text>
-        <BluetoothDeviceList data={discoveredDevices} />
+        <View style={{display : 'flex', flexDirection :  (isScreenLandscape() ? 'row' : 'column')}}>
+            <View>
+                <Text style={[Styles.deviceTitle]}>Eşleşen Cihazlar</Text>
+                <BluetoothDeviceList data={pairedDevices} />
+            </View>
+            <View>
+                <Text style={[Styles.deviceTitle]}>Kullanılabilir Cihazlar</Text>
+                <BluetoothDeviceList data={discoveredDevices} />
+            </View>
+        </View>
+
     </View>;
 }
 
