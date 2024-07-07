@@ -25,6 +25,14 @@ void handleCommand(int command, HardwareSerial *serial){
         return;
     }
 
+    if(command == COMMAND_KEY_DATA_SEND_WATER_LEVELS){
+        writeCleanWaterLevelDataToSerial(serial);
+        writeGrayWaterLevelDataToSerial(serial);
+        writeBlackWaterLevelDataToSerial(serial);
+        writeEndOfRecord(serial);
+        return;
+    }
+
     if(command == COMMAND_KEY_DATA_SEND_ALL){
         writeSystemDataToSerial(serial);
         writeEndOfRecord(serial);
