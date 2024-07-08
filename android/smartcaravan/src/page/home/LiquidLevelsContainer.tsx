@@ -9,7 +9,7 @@ const Styles = StyleSheet.create({
     container : {
         flexDirection : 'row',
         gap : 10,
-        justifyContent : "space-between",
+        justifyContent : "space-around",
         alignItems : 'center',
         alignContent : "center",
         alignSelf : "center",

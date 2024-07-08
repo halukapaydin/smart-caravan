@@ -4,14 +4,13 @@ import {NativeEventEmitter, NativeModules, ToastAndroid} from "react-native";
 import BleManager, {Peripheral} from "react-native-ble-manager";
 import {EmitterSubscription} from "react-native/Libraries/vendor/emitter/EventEmitter";
 import {
-    CHARACTERISTIC_UUID,
     COMMAND_KEY_DATA_RESET_RELAYS,
     COMMAND_KEY_DATA_SEND_ALL,
-    COMMAND_KEY_DATA_SEND_TEMPERATURE_AND_HUMIDITY, convertPeripheralInfoToBluetoothDevice,
+    COMMAND_KEY_DATA_SEND_TEMPERATURE_AND_HUMIDITY,
+    convertPeripheralInfoToBluetoothDevice,
     convertPeripheralToBluetoothDevice,
     grantBluetoothPermissions,
-    parseBluetoothData,
-    SERVICE_UUID
+    parseBluetoothData
 } from "../util/BluetoothUtil.ts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SensorValues from "../model/SensorValues.ts";
@@ -68,6 +67,7 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
     const [data, setData] = useState<SensorValues>(new SensorValues());
     const [dataUpdateTime, setDataUpdateTime] = useState(0);
     const [reloadAllValue, setReloadAllValue] = useState<number>(0);
+    const [isScreenOrientationLandscape, setIsScreenOrientationLandscape] = useState(false);
     const [screenOrientation, setScreenOrientation] = useState<OrientationType>(Orientation.getInitialOrientation);
 
 
@@ -86,8 +86,22 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
     }
     useEffect(() => {
         readAllValues();
-        Orientation.addDeviceOrientationListener((deviceOrientation)=>{
-            setScreenOrientation(deviceOrientation);
+        Orientation.addDeviceOrientationListener((_deviceOrientation)=>{
+            if(_deviceOrientation === screenOrientation){
+                return;
+            }
+            console.log("deviceOrientation", screenOrientation, _deviceOrientation);
+
+            if(_deviceOrientation == OrientationType.UNKNOWN){
+                if(screenOrientation.toString().includes("LANDSCAPE")){
+                    setIsScreenOrientationLandscape(true);
+                }else{
+                    setIsScreenOrientationLandscape(false);
+                }
+            }else{
+                setIsScreenOrientationLandscape(_deviceOrientation.toString().includes("LANDSCAPE"));
+            }
+            setScreenOrientation(_deviceOrientation);
         })
 
     }, [reloadAllValue]);
@@ -366,10 +380,7 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
     }
 
     const isScreenLandscape = ()=>{
-        if(screenOrientation === OrientationType.UNKNOWN){
-            return false;
-        }
-        return screenOrientation !== OrientationType.PORTRAIT;
+        return isScreenOrientationLandscape;
     }
 
     return <BluetoothManagerContext.Provider value={

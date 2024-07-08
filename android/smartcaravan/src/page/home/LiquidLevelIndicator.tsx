@@ -77,7 +77,7 @@ const LiquidLevelIndicator = (props: LiquidLevelIndicatorProps) => {
     clipPath.transform(transformMatrix); // apply transform matrix to our clip path
 
     const fontSize = radius / 2; // font size is half of the radius
-    const font = useFont("../../../assets/Roboto-Bold.ttf", fontSize); // create font with font file and size
+    const font = useFont( require("../../../assets/Roboto-Regular.ttf"), fontSize); // create font with font file and size
 
     const text = `${value}%`; // convert value to string
     const textWidth = font?.getTextWidth(text) ?? 0; // get text width
