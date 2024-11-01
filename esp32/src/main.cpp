@@ -1,76 +1,45 @@
-/*
-    Based on Neil Kolban example for IDF: https://github.com/nkolban/esp32-snippets/blob/master/cpp_utils/tests/BLE%20Tests/SampleServer.cpp
-    Ported to Arduino ESP32 by Evandro Copercini
-    updates by chegewara
-*/
-
 #include <Arduino.h>
-#include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEServer.h>
+#include "Relay.h"
+#include "Ble.h"
+#include "Buzzer.h"
+#include "CommandController.h"
 
-// See the following for generating UUIDs:
-// https://www.uuidgenerator.net/
+Ble *ble;
+CommandController *commandController;
+Buzzer* buzzer;
 
-#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
-#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
-bool deviceConnected = false;
-BLECharacteristic *pCharacteristic;
-
-class ServerCallbacks: public BLEServerCallbacks {
-    void onConnect(BLEServer* pServer) {
-        deviceConnected = true;
-    };
-
-    void onDisconnect(BLEServer* pServer) {
-        deviceConnected = false;
+class CommandHandler : public Ble::BleCommandCallback {
+    void onCommand(std::string &command) override {
+        Serial.print("command : ");
+        Serial.println(command.c_str());
+        commandController->handleCommand(command);
     }
 };
 
-class CharacteristicCallbacks: public BLECharacteristicCallbacks {
-public:
-    void onRead(BLECharacteristic *pCharacteristic) override {
-        uint8_t *d = pCharacteristic->getData();
-        Serial.write(d, pCharacteristic->getLength());
-    }
-};
+void init() {
 
+}
 void setup() {
     Serial.begin(115200);
-
-    BLEDevice::init("AVAREYOLCULAR2");
-    BLEServer *pServer = BLEDevice::createServer();
-    pServer->setCallbacks(new ServerCallbacks());
-
-    BLEService *pService = pServer->createService(SERVICE_UUID);
-    pCharacteristic = pService->createCharacteristic(
-            CHARACTERISTIC_UUID,
-            BLECharacteristic::PROPERTY_READ |
-            BLECharacteristic::PROPERTY_WRITE
-    );
-    pCharacteristic->setCallbacks(new CharacteristicCallbacks());
-
-//    pCharacteristic->setValue("Hello World says Neil");
-    pService->start();
-    // BLEAdvertising *pAdvertising = pServer->getAdvertising();  // this still is working for backward compatibility
-    BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
-    pAdvertising->addServiceUUID(SERVICE_UUID);
-    pAdvertising->setScanResponse(true);
-    pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
-    pAdvertising->setMinPreferred(0x12);
-    BLEDevice::startAdvertising();
+    ble = new Ble("AVAREYOLCULAR");
+    ble->commandCallback = new CommandHandler();
+    commandController = new CommandController(*ble);
+    delay(1000);
+    commandController->init();
+    delay(1000);
+    ble->start();
+    Serial.println("ESP 32 setup finished");
+    buzzer = new Buzzer(27);
+    buzzer->init();
 }
 
 void loop() {
-    if(!deviceConnected){
-        return;
-    }
-    if (Serial.available()) {
-        int bytesRead = Serial.read();
-        if (bytesRead > 0) {
-            pCharacteristic->setValue(bytesRead);
-            pCharacteristic->notify();
-        }
-    }
-    delay(10);
+//    digitalWrite(2, HIGH);
+//    buzzer->beep();
+//    delay(2000);
+//    digitalWrite(2, LOW);
+//    buzzer->silent();
+//    delay(1000);
+//    std::string command = "PRINT_ALL";
+//    commandController->handleCommand(command);
 }
