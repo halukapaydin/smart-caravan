@@ -5,9 +5,17 @@ export default class SensorValues {
     private humidityValue: number = 0;
     private temperatureValue: number = 0;
     private cleanWaterLevel : number = 0;
+    private cleanWaterValue : number = 0;
     private grayWaterLevel : number = 0;
+    private grayWaterValue : number = 0;
     private blackWaterLevel : number = 0;
+    private blackWaterValue : number = 0;
     private batteryVoltage : number = 125;
+    private airQualityLevel : number = 0;
+    private airQualityValue : number = 0;
+    private gasLevel : number = 0;
+    private gasValue : number = 0;
+    
 
 
     getButtonsValue(): number[] {
@@ -55,7 +63,7 @@ export default class SensorValues {
     setTemperatureValue(value: number) {
         this.temperatureValue = value;
     }
-
+    // clean water
     getCleanWaterLevel() : number{
         return this.cleanWaterLevel;
     };
@@ -63,26 +71,74 @@ export default class SensorValues {
     setCleanWaterLevel(level:number){
         this.cleanWaterLevel = level;
     }
+    getCleanWaterValue() : number{
+        return this.cleanWaterValue;
+    };
+    setCleanWaterValue(level:number){
+        this.cleanWaterValue = level;
+    }
+    //gray water
     getGrayWaterLevel() : number{
         return this.grayWaterLevel;
     };
     setGrayWaterLevel(level:number){
         this.grayWaterLevel = level;
     }
-
-    getBatteryVoltage() : number{
-        return this.batteryVoltage;
+    getGrayWaterValue() : number{
+        return this.grayWaterValue;
     };
-    setBatteryVoltage(level:number){
-        this.batteryVoltage = level;
+    setGrayWaterValue(level:number){
+        this.grayWaterValue = level;
     }
+    // black water
     getBlackWaterLevel() : number{
         return this.blackWaterLevel;
     };
     setBlackWaterLevel(level:number){
         this.blackWaterLevel = level;
     }
+    getBlackWaterValue() : number{
+        return this.blackWaterValue;
+    };
+    setBlackWaterValue(level:number){
+        this.blackWaterValue = level;
+    }
+    // battery voltage
+    getBatteryVoltage() : number{
+        return this.batteryVoltage;
+    };
+    setBatteryVoltage(level:number){
+        this.batteryVoltage = level;
+    }
 
+    getAirQualityLevel() : number{
+        return this.airQualityLevel ;
+    };
+    setAirQualityLevel(level:number){
+        this.airQualityLevel = level;
+    }
+    
+    getAirQualityValue() : number{
+        return this.airQualityValue;
+    };
+    setAirQualityValue(level:number){
+        this.airQualityValue = level;
+    }
+
+    getGasLevel() : number{
+        return this.gasLevel;
+    };
+    setGasLevel(level:number){
+        this.gasLevel = level;
+    }
+    
+    getGasValue() : number{
+        return this.gasValue;
+    };
+    setGasValue(level:number){
+        this.gasValue = level;
+    }
+    
     clone() : SensorValues{
         const c = new SensorValues();
         Object.assign(c, this);

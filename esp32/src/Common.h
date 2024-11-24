@@ -21,6 +21,7 @@ static std::string PRINT_WATER_LEVEL_GRAY = "PRINT_WL_GRAY";
 static std::string PRINT_WATER_LEVEL_BLACK = "PRINT_WL_BLACK";
 static std::string PRINT_GAS_LEVEL = "PRINT_GAS";
 static std::string PRINT_AIR_QUALITY_LEVEL = "PRINT_AIR_QUALITY";
+static std::string PRINT_BATTERY_LEVEL = "PRINT_BATTERY_LEVEL";
 
 static std::string PRINT_KEY_RELAY = "R";
 static std::string PRINT_KEY_HUMIDITY = "HMD";

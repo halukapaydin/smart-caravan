@@ -1,6 +1,8 @@
 import React, {useContext} from 'react';
 import {StyleSheet, View} from "react-native";
 import RelayButton from "./RelayButton.tsx";
+import RefreshButton from "./RefreshButton.tsx";
+import ResetRelaysButton from "./ResetRelaysButton.tsx";
 
 interface RelayButtonsProps {
 }
@@ -37,8 +39,8 @@ const RelayButtons = (props: RelayButtonsProps) => {
         <View style={[Styles.line]}>
             <RelayButton relayId={9}/>
             <RelayButton relayId={10}/>
-            <RelayButton relayId={20}/>
-            <RelayButton relayId={21}/>
+            <RefreshButton />
+            <ResetRelaysButton />
         </View>
     </View>
 };

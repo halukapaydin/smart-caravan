@@ -22,7 +22,12 @@ public:
 
 class ServerCallbacks : public BLEServerCallbacks{
     void onConnect(BLEServer* pServer, esp_ble_gatts_cb_param_t *param) override{
-        Serial.print("Client connected");
+        Serial.println("Device connected");
+        uint16_t bleID = pServer->getConnId();
+        pServer->updatePeerMTU(bleID, 500);
+        uint16_t peerMtu = pServer->getPeerMTU(bleID);
+        Serial.print("updateMTU to: ");
+        Serial.println(peerMtu);
     }
     void onDisconnect(BLEServer* pServer, esp_ble_gatts_cb_param_t *param) override{
         Serial.print("Client disconnected");
@@ -33,6 +38,7 @@ class ServerCallbacks : public BLEServerCallbacks{
 
 void Ble::initBLE() {
     BLEDevice::init(deviceName);
+    BLEDevice::setMTU(500);
     BLEServer *pServer = BLEDevice::createServer();
     pServer->setCallbacks(new ServerCallbacks());
     BLEService *pService = pServer->createService(SERVICE_UUID);
@@ -56,6 +62,7 @@ void Ble::initBLE() {
 void Ble::setValue(const std::string &newValue) {
     Serial.print("data will send over ble : ");
     Serial.println(newValue.c_str());
+
     pCharacteristic->setValue(newValue);
     pCharacteristic->notify();
     Serial.print("data sent : ");

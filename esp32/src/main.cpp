@@ -6,7 +6,6 @@
 
 Ble *ble;
 CommandController *commandController;
-Buzzer* buzzer;
 
 class CommandHandler : public Ble::BleCommandCallback {
     void onCommand(std::string &command) override {
@@ -29,17 +28,11 @@ void setup() {
     delay(1000);
     ble->start();
     Serial.println("ESP 32 setup finished");
-    buzzer = new Buzzer(27);
-    buzzer->init();
 }
 
 void loop() {
-//    digitalWrite(2, HIGH);
-//    buzzer->beep();
-//    delay(2000);
-//    digitalWrite(2, LOW);
-//    buzzer->silent();
-//    delay(1000);
-//    std::string command = "PRINT_ALL";
-//    commandController->handleCommand(command);
+    if(Serial.available()){
+        std::string command = Serial.readStringUntil('\n').c_str();
+        commandController->handleCommand(command);
+    }
 }

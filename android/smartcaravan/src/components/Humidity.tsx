@@ -8,10 +8,12 @@ interface ThermometerProps {
 }
 
 const Humidity = (props: ThermometerProps) => {
-    const {sensorsData, dataUpdateTime, readAllValues} = useContext(BluetoothManagerContext);
+    const {sensorsData, dataUpdateTime, sendCommand} = useContext(BluetoothManagerContext);
     const value = sensorsData.getHumidityValue();
     return (
-        <TouchableOpacity onPress={readAllValues}>
+        <TouchableOpacity onPress={()=>{
+            sendCommand("PRINT_TEMP");
+        }}>
             <View style={{
                 width: props.width,
                 height: props.height,

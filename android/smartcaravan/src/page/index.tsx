@@ -15,14 +15,12 @@ interface PageContainerProps {
 
 
 const PageContainer = (props: PageContainerProps) => {
-    const {startReloadAllValue, stopReloadAllValue} = useContext(BluetoothManagerContext);
+    const {readAllValues} = useContext(BluetoothManagerContext);
     const onHomeFocus = () => {
-        startReloadAllValue();
+        readAllValues();
     }
 
     const onHomeBlur = () => {
-
-        stopReloadAllValue();
     }
 
     useEffect(() => {

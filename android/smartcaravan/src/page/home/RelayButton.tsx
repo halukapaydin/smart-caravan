@@ -6,7 +6,9 @@ import {
     COLOR_HIGHLIGHT,
     COLOR_PRIMARY,
     COLOR_SECONDARY,
-    COLOR_WHITE
+    COLOR_WHITE,
+    COMMAND_RELAY_ON,
+    COMMAND_RELAY_OFF,
 } from "../../util/BluetoothUtil.ts";
 import {RELAY_ATTRIBUTES} from "../../util/ButtonUtil.ts";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
@@ -25,13 +27,18 @@ const RelayButton = (props: RelayButtonProps) => {
     }, []);
 
     useEffect(() => {
+        setValue(sensorsData.getButtonValue(props.relayId))
         return () => {
             setValue(sensorsData.getButtonValue(props.relayId))
         };
     }, [dataUpdateTime]);
 
     const handleOnClick = ()=>{
-        sendCommand(props.relayId);
+        if(value === 1){
+            sendCommand( COMMAND_RELAY_OFF +  props.relayId);
+        }else{
+            sendCommand( COMMAND_RELAY_ON +  props.relayId);
+        }
     }
     const color = (value === 1 ? COLOR_HIGHLIGHT : COLOR_WHITE);
 

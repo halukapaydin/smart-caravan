@@ -1,4 +1,4 @@
-package com.smartcaravan
+package com.smartcaravan2
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -34,6 +34,9 @@ void CommandController::handleCommand(std::string &command) {
     } else if (command.rfind(PRINT_GAS_LEVEL, 0) == 0) {
         this->printGasLevel(command);
         return;
+    } else if (command.rfind(PRINT_BATTERY_LEVEL, 0) == 0) {
+        //print battery level
+        return;
     } else {
         Serial.print("Unknown command :");
         Serial.println(command.c_str());

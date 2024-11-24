@@ -8,10 +8,12 @@ interface ThermometerProps {
 }
 
 const Thermometer = (props: ThermometerProps) => {
-    const {sensorsData, dataUpdateTime, readAllValues} = useContext(BluetoothManagerContext);
+    const {sensorsData, dataUpdateTime, sendCommand} = useContext(BluetoothManagerContext);
     const value = sensorsData.getTemperatureValue();
     return (
-        <TouchableOpacity onPress={readAllValues}>
+        <TouchableOpacity onPress={()=>{
+            sendCommand("PRINT_TEMP");
+        }}>
         <View style={{width: props.width, height: props.height, display: "flex", flexDirection: "column", alignItems: "center", justifyContent : "space-between"}}>
             <Image style={{width: "70%", height: "70%"}} source={require("../../assets/thermometer.png")}/>
             <View style={{alignItems : "center"}}>

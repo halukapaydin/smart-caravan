@@ -32,6 +32,6 @@ std::string TemperatureSensor::toTemperatureString() {
 }
 
 void TemperatureSensor::init() {
-    this->dht = new DHT(32, DHT11);
+    this->dht = new DHT(this->pin, DHT11);
     this->dht->begin();
 }

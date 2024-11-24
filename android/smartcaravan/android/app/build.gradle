@@ -74,9 +74,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.smartcaravan"
+    namespace "com.smartcaravan2"
     defaultConfig {
-        applicationId "com.smartcaravan"
+        applicationId "com.smartcaravan2"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -84,9 +84,9 @@ android {
     }
     signingConfigs {
         release {
-          storeFile file('smartcaravan.keystore')
+          storeFile file('smartcaravan2.keystore')
           storePassword 'heyhey123'
-          keyAlias 'smartcaravan'
+          keyAlias 'smartcaravan2'
           keyPassword 'heyhey123'
         }
         debug {

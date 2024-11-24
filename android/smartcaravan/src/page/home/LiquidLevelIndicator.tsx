@@ -1,20 +1,26 @@
-import React, {useEffect, useState} from 'react';
+import React, {Dispatch, useEffect, useState} from 'react';
 import {Canvas, Circle, Group, Skia, Text as SkiaText, useFont} from "@shopify/react-native-skia";
 import {area, scaleLinear} from "d3";
-import {Text, View} from "react-native";
+import {Text, TouchableOpacity, View} from "react-native";
 
 interface LiquidLevelIndicatorProps {
     value: number;
+    level: number;
     size: number;
     color: string;
     label: string;
+    onClick : Dispatch<void>;
 }
 
 const LiquidLevelIndicator = (props: LiquidLevelIndicatorProps) => {
+    const [level, setLevel] = useState(props.level);
     const [value, setValue] = useState(props.value);
+    
     useEffect(() => {
         setValue(props.value);
+        setLevel(props.level);
     }, [props.value]);
+
 
 
     const {size} = props;
@@ -76,16 +82,28 @@ const LiquidLevelIndicator = (props: LiquidLevelIndicatorProps) => {
     // @ts-ignore
     clipPath.transform(transformMatrix); // apply transform matrix to our clip path
 
-    const fontSize = radius / 2; // font size is half of the radius
-    const font = useFont( require("../../../assets/Roboto-Regular.ttf"), fontSize); // create font with font file and size
+    const fontSizeLevel = radius / 2; // font size is half of the radius
+    const fontLevel = useFont( require("../../../assets/Roboto-Regular.ttf"), fontSizeLevel); // create font with font file and size
 
-    const text = `${value}%`; // convert value to string
-    const textWidth = font?.getTextWidth(text) ?? 0; // get text width
-    const textTranslateX = radius - textWidth * 0.5; // calculate text X position to center it horizontally
-    const textTransform = [{translateY: size * 0.5 - fontSize * 0.7}]; // calculate vertical center position. Half canvas size - half font size. But since characters isn't centered inside font rect we do 0.7 instead of 0.5.
+    const textLevel = `${level}%`; // convert value to string
+    const textWidthLevel = fontLevel?.getTextWidth(textLevel) ?? 0; // get text width
+    const textTranslateXLevel = radius - textWidthLevel * 0.5; // calculate text X position to center it horizontally
+    const textTransformLevel = [{translateY: size * 0.5 - fontSizeLevel * 0.7}]; // calculate vertical center position. Half canvas size - half font size. But since characters isn't centered inside font rect we do 0.7 instead of 0.5.
 
+
+    const fontSizeValue = radius / 5; // font size is half of the radius
+    const fontValue = useFont( require("../../../assets/Roboto-Regular.ttf"), fontSizeValue); // create font with font file and size
+    const textValue = `${value}`; // convert value to string
+    const textWidthValue = fontValue?.getTextWidth(textValue) ?? 0; // get text width
+    const textTranslateXValue = radius - textWidthValue * 0.5; // calculate text X position to center it horizontally
+    const textTransformValue = [{translateY: size * 0.5 - fontSizeValue * 0.7}]; // calculate vertical center position. Half canvas size - half font size. But since characters isn't centered inside font rect we do 0.7 instead of 0.5.
+
+    const handleOnClick = ()=>{
+        props.onClick();
+    }
 
     return (
+        <TouchableOpacity onPress={handleOnClick}>
         <View style={{display: "flex", gap: 5}}>
             <Canvas style={{width: size, height: size}}>
                 <Circle
@@ -107,16 +125,25 @@ const LiquidLevelIndicator = (props: LiquidLevelIndicatorProps) => {
 
                 </Group>
                 <SkiaText
-                    font={font}
-                    x={textTranslateX}
-                    y={fontSize}
-                    text={text}
+                    font={fontLevel}
+                    x={textTranslateXLevel}
+                    y={fontSizeLevel}
+                    text={textLevel}
                     color={"#FFFFFF"}
-                    transform={textTransform}
+                    transform={textTransformLevel}
+                />
+                <SkiaText
+                    font={fontValue}
+                    x={textTranslateXValue}
+                    y={fontSizeValue + 20}
+                    text={textValue}
+                    color={"#FFFFFF"}
+                    transform={textTransformValue}
                 />
             </Canvas>
             <Text style={{color: "#FFFFFF", textAlign: "center"}}>{props.label}</Text>
         </View>
+        </TouchableOpacity>
 
     );
 };

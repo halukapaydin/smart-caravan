@@ -47,11 +47,11 @@ const Style = StyleSheet.create({
 })
 
 const BatteryIcon = (props: BatteryIconProps) => {
-    const {sensorsData, dataUpdateTime, readHumidityAndTemperatureValue} = useContext(BluetoothManagerContext);
+    const {sensorsData, dataUpdateTime, readAllValues} = useContext(BluetoothManagerContext);
     const value = sensorsData.getBatteryVoltage();
     const {width = 50, height = 100} = props;
     let percent = calculatePercent(value);
-    return <TouchableOpacity onPress={readHumidityAndTemperatureValue}>
+    return <TouchableOpacity onPress={readAllValues}>
         <View style={[Style.container, {width: width, height: height}]}>
             <View style={[Style.head]}>
             </View>

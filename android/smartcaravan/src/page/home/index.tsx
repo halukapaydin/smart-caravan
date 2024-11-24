@@ -32,7 +32,6 @@ const HomePage = (props: HomePageProps) => {
         initBluetoothDevice,
         sensorsData,
         connectedDevice,
-        readHumidityAndTemperatureValue,
         isScreenLandscape
     } = useContext(BluetoothManagerContext);
     useEffect(() => {

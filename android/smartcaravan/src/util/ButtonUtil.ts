@@ -36,7 +36,11 @@ RELAY_ATTRIBUTES[9] = new RelayAttr(faRightToBracket, "Balkon");
 RELAY_ATTRIBUTES[10] = new RelayAttr(faBoltLightning, "Dış");
 RELAY_ATTRIBUTES[20] = new RelayAttr(faRepeat, "Yenile");
 RELAY_ATTRIBUTES[21] = new RelayAttr(faPowerOff, "Hepsini Kapat");
+const RELAY_ATTRIBUTES_REFRESH = new RelayAttr(faRepeat, "Yenile");
+const RELAY_ATTRIBUTES_RESET_RELAYS = new RelayAttr(faPowerOff, "Hepsini Kapat");
 
 export {
-    RELAY_ATTRIBUTES
+    RELAY_ATTRIBUTES,
+    RELAY_ATTRIBUTES_REFRESH,
+    RELAY_ATTRIBUTES_RESET_RELAYS
 };

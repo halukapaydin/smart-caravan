@@ -10,7 +10,7 @@ interface BluetoothConfigPageProps {
 }
 
 export default (props: BluetoothConfigPageProps) => {
-    const {fetchPairedDevices, pairedDevices, discoveredDevices,
+    const {discoveredDevices,
         scanStart, scanStop, scanning, initBluetoothDevice,
         isScreenLandscape
 
@@ -24,9 +24,8 @@ export default (props: BluetoothConfigPageProps) => {
 
     }
     useEffect(() => {
-        initBluetoothDevice().then(()=>{
-            fetchPairedDevices();
-        });
+        initBluetoothDevice()
+            .then(()=>{});
 
         return () => {
             scanStop();
@@ -37,10 +36,6 @@ export default (props: BluetoothConfigPageProps) => {
     return <View style={{gap: 20, display: 'flex', flex: 1}}>
         <BluetoothScanButton onPress={handleScanClick}/>
         <View style={{display : 'flex', flexDirection :  (isScreenLandscape() ? 'row' : 'column')}}>
-            <View>
-                <Text style={[Styles.deviceTitle]}>Eşleşen Cihazlar</Text>
-                <BluetoothDeviceList data={pairedDevices} />
-            </View>
             <View>
                 <Text style={[Styles.deviceTitle]}>Kullanılabilir Cihazlar</Text>
                 <BluetoothDeviceList data={discoveredDevices} />

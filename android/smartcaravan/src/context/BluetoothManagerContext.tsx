@@ -4,9 +4,7 @@ import {NativeEventEmitter, NativeModules, ToastAndroid} from "react-native";
 import BleManager, {Peripheral} from "react-native-ble-manager";
 import {EmitterSubscription} from "react-native/Libraries/vendor/emitter/EventEmitter";
 import {
-    COMMAND_KEY_DATA_RESET_RELAYS,
-    COMMAND_KEY_DATA_SEND_ALL,
-    COMMAND_KEY_DATA_SEND_TEMPERATURE_AND_HUMIDITY,
+    COMMAND_PRINT_ALL,
     convertPeripheralInfoToBluetoothDevice,
     convertPeripheralToBluetoothDevice,
     grantBluetoothPermissions,
@@ -14,7 +12,6 @@ import {
 } from "../util/BluetoothUtil.ts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SensorValues from "../model/SensorValues.ts";
-import Orientation, {OrientationType} from "react-native-orientation-locker";
 
 const BleManagerModule = NativeModules.BleManager;
 
@@ -22,8 +19,6 @@ export interface IBluetoothManagerContextValue {
     scanning: boolean,
     connecting: boolean,
     connectedDevice: BluetoothDevice | undefined,
-    fetchPairedDevices: DispatchWithoutAction,
-    pairedDevices: BluetoothDevice[],
     discoveredDevices: BluetoothDevice[],
     connectDevice: Dispatch<BluetoothDevice>,
     disconnectDevice: Dispatch<BluetoothDevice | undefined>,
@@ -34,13 +29,9 @@ export interface IBluetoothManagerContextValue {
     isDeviceConnected: (device: BluetoothDevice) => boolean,
     initBluetoothDevice: () => Promise<void>;
     readAllValues: () => void;
-    readHumidityAndTemperatureValue: () => void;
-    readRelayButtonValue?: (relayButtonId: number) => void;
     dataUpdateTime: number;
     sensorsData: SensorValues;
-    sendCommand: Dispatch<number>;
-    startReloadAllValue: DispatchWithoutAction,
-    stopReloadAllValue: DispatchWithoutAction,
+    sendCommand: Dispatch<string>;
     isScreenLandscape:()=>boolean
 }
 
@@ -54,7 +45,6 @@ let _didConnectPeripheralListener: EmitterSubscription | null = null;
 let _didDisconnectPeripheralListener: EmitterSubscription | null = null;
 
 
-let reloadAllValueInterval: NodeJS.Timeout | undefined = undefined;
 export const BluetoothManagerContext = React.createContext<IBluetoothManagerContextValue>({});
 
 export const BluetoothManagerContextProvider = ({children}: { children: any }) => {
@@ -62,14 +52,10 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
     const [scanning, setScanning] = useState(false);
     const [connecting, setConnecting] = useState(false);
     const [connectedDevice, setConnectedDevice] = useState<BluetoothDevice | undefined>(undefined);
-    const [pairedDevices, setPairedDevices] = useState<BluetoothDevice[]>([]);
     const [discoveredDevices, setDiscoveredDevices] = useState<BluetoothDevice[]>([]);
     const [data, setData] = useState<SensorValues>(new SensorValues());
     const [dataUpdateTime, setDataUpdateTime] = useState(0);
-    const [reloadAllValue, setReloadAllValue] = useState<number>(0);
     const [isScreenOrientationLandscape, setIsScreenOrientationLandscape] = useState(false);
-    const [screenOrientation, setScreenOrientation] = useState<OrientationType>(Orientation.getInitialOrientation);
-
 
     const onDeviceDiscovered = (device: BluetoothDevice) => {
         if (discoveredDevices.findIndex(d => (d.id === device.id)) >= 0) {
@@ -84,27 +70,6 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
         setScanning(false);
         // console.log("scan stopped")
     }
-    useEffect(() => {
-        readAllValues();
-        Orientation.addDeviceOrientationListener((_deviceOrientation)=>{
-            if(_deviceOrientation === screenOrientation){
-                return;
-            }
-            console.log("deviceOrientation", screenOrientation, _deviceOrientation);
-
-            if(_deviceOrientation == OrientationType.UNKNOWN){
-                if(screenOrientation.toString().includes("LANDSCAPE")){
-                    setIsScreenOrientationLandscape(true);
-                }else{
-                    setIsScreenOrientationLandscape(false);
-                }
-            }else{
-                setIsScreenOrientationLandscape(_deviceOrientation.toString().includes("LANDSCAPE"));
-            }
-            setScreenOrientation(_deviceOrientation);
-        })
-
-    }, [reloadAllValue]);
 
     const setLastConnectedDevice = async (device: BluetoothDevice) => {
         try {
@@ -142,8 +107,9 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
                 setConnectedDevice(bluetoothDevice);
                 setLastConnectedDevice(bluetoothDevice).then();
                 console.log("connected")
+                await bleManager.requestMTU(device.id, 500);
+                console.log("request mtu to 500")
                 await bleManager.startNotification(bluetoothDevice.id, bluetoothDevice.serviceUUID, bluetoothDevice.characteristic);
-                startReloadAllValue();
             })
             .catch(err => {
                 ToastAndroid.show("Error : " + err, 5);
@@ -169,17 +135,7 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
                     return;
                 }
                 bleManager.disconnect(connectedDevice.id).then(async res => {
-                    // console.log("isPeripheralConnected", connectedDevice.id)
-
-                    // try {
-                    //     await bleManager.stopNotification(connectedDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID);
-                    //     console.log("stopNotification", connectedDevice.id)
-                    //
-                    // } finally {
-                    //     setConnectedDevice(undefined);
-                    // }
                     setConnectedDevice(undefined);
-                    stopReloadAllValue();
                     console.log("disconnected ")
                 })
             })
@@ -227,6 +183,7 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
 
     const bleManager = useMemo(() => {
         // console.log("use memo")
+        
         _discoverListener = _bleManagerEmitter.addListener(
             "BleManagerDiscoverPeripheral",
             (peripheral: Peripheral) => {
@@ -249,11 +206,11 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
         _didUpdateValueForCharacteristicListener = _bleManagerEmitter.addListener(
             'BleManagerDidUpdateValueForCharacteristic',
             (d) => {
-                // console.log("BleManagerDidUpdateValueForCharacteristic", d);
+                console.log("BleManagerDidUpdateValueForCharacteristic", d);
                 let sv = parseBluetoothData(d.value, data);
                 setData(sv);
                 setDataUpdateTime(new Date().getTime());
-                // console.log("data", sv);
+                console.log("data", sv);
             },
         );
 
@@ -285,12 +242,6 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
         return BleManager
     }, []);
 
-    const fetchPairedDevices = () => {
-        bleManager.getBondedPeripherals().then(res => {
-            const devices = res.map(p => convertPeripheralToBluetoothDevice(p))
-            setPairedDevices(devices);
-        })
-    }
 
     const initBluetoothDevice = async () => {
         await grantBluetoothPermissions();
@@ -326,11 +277,20 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
     }, []);
 
 
-    const writeDataOnConnectedDevice = (data: number) => {
+    const writeDataOnConnectedDevice = (data: string) => {
         if (!connectedDevice) {
             return;
         }
-        bleManager.writeWithoutResponse(connectedDevice.id, connectedDevice.serviceUUID, connectedDevice.characteristic, [data])
+    
+        let commandArray : number[] = [];
+        const len = data.length;
+        for (let index = 0; index < len; index++) {
+            const element:number = data.charCodeAt(index);
+            commandArray[index] = element;
+            
+        }
+
+        bleManager.writeWithoutResponse(connectedDevice.id, connectedDevice.serviceUUID, connectedDevice.characteristic,commandArray)
             .then((res) => {
                 // console.log("res writeWithoutResponse", res);
             })
@@ -339,44 +299,15 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
             })
 
     }
-    const sendCommand = (command: number) => {
+
+    const sendCommand = (command: string) => {
         // let hex = command.toString(16);
         console.log("send command", command);
         // writeDataOnConnectedDevice(parseInt(hex));
         writeDataOnConnectedDevice(command);
     }
-    const resetRelays = () => {
-        sendCommand(COMMAND_KEY_DATA_RESET_RELAYS);
-    }
     const readAllValues = () => {
-        sendCommand(COMMAND_KEY_DATA_SEND_ALL);
-    }
-
-    const readHumidityAndTemperatureValue = () => {
-        sendCommand(COMMAND_KEY_DATA_SEND_TEMPERATURE_AND_HUMIDITY);
-    }
-
-    const readRelayButtonValue = (relayButtonId: number) => {
-        sendCommand(50 + relayButtonId);
-    }
-
-    const stopReloadAllValue = () => {
-        if (!reloadAllValueInterval) {
-            return;
-        }
-        clearInterval(reloadAllValueInterval);
-        reloadAllValueInterval = undefined;
-        // console.log("stopReloadAllValue")
-    }
-    const startReloadAllValue = () => {
-        if (reloadAllValueInterval) {
-            return;
-        }
-        reloadAllValueInterval = setInterval(() => {
-            setReloadAllValue(new Date().getTime());
-        }, 5000);
-        // console.log("startReloadAllValue")
-
+        sendCommand(COMMAND_PRINT_ALL);
     }
 
     const isScreenLandscape = ()=>{
@@ -388,8 +319,6 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
             scanning: scanning,
             connecting: connecting,
             connectedDevice: connectedDevice,
-            fetchPairedDevices: fetchPairedDevices,
-            pairedDevices: pairedDevices,
             discoveredDevices: discoveredDevices,
             connectDevice: connectDevice,
             disconnectDevice: disconnectDevice,
@@ -400,10 +329,6 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
             bluetoothState: bluetoothState,
             initBluetoothDevice: initBluetoothDevice,
             readAllValues: readAllValues,
-            readHumidityAndTemperatureValue: readHumidityAndTemperatureValue,
-            startReloadAllValue: startReloadAllValue,
-            stopReloadAllValue: stopReloadAllValue,
-            readRelayButtonValue: readRelayButtonValue,
             dataUpdateTime: dataUpdateTime,
             sensorsData: data,
             sendCommand: sendCommand,
