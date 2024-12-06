@@ -12,6 +12,7 @@ import {
 } from "../util/BluetoothUtil.ts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SensorValues from "../model/SensorValues.ts";
+import { handleData } from "./BluetoothTestData.ts";
 
 const BleManagerModule = NativeModules.BleManager;
 
@@ -301,10 +302,12 @@ export const BluetoothManagerContextProvider = ({children}: { children: any }) =
     }
 
     const sendCommand = (command: string) => {
-        // let hex = command.toString(16);
         console.log("send command", command);
-        // writeDataOnConnectedDevice(parseInt(hex));
-        writeDataOnConnectedDevice(command);
+        // writeDataOnConnectedDevice(command);
+        handleData(command, data)
+        .then((res:SensorValues)=>{
+            setData(res);
+        });
     }
     const readAllValues = () => {
         sendCommand(COMMAND_PRINT_ALL);
